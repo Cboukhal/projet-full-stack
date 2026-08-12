@@ -1,0 +1,105 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# =========================
+# Django
+# =========================
+*.log
+local_settings.py
+
+# Django generated files
+staticfiles/
+media/
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python tools cache
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# React / Node.js
+# =========================
+node_modules/
+
+# Vite / React builds
+dist/
+build/
+
+# npm / yarn / pnpm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# React/Vite cache
+.vite/
+.eslintcache
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# Backend env
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Frontend env
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# =========================
+# SQL Server
+# =========================
+*.bak
+*.mdf
+*.ldf
+*.ndf
+*.trn
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Operating System
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.cache
