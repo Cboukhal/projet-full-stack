@@ -1,0 +1,55 @@
+name: formanova
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: formanova-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-formanova}
+      POSTGRES_USER: ${POSTGRES_USER:-formanova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-formanova_dev_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-formanova} -d ${POSTGRES_DB:-formanova}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: formanova-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: formanova-frontend
+    restart: unless-stopped
+    environment:
+      VITE_BACKEND_URL: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  frontend_node_modules:

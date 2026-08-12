@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import "./Login.css";
+import { useAuth } from "../context/AuthContext.jsx";
+import "../styles/login.css";
 
 const ROLE_HOME = {
-  eleve: "/profil",
-  formateur: "/profil",
-  referente: "/espace-referente",
-  administrateur: "/profil",
+  eleve: "/profile",
+  formateur: "/profile",
+  referente: "/profile",
+  administrateur: "/profile",
 };
 
 export default function Login() {
@@ -26,7 +26,7 @@ export default function Login() {
 
     try {
       const { user } = await login(identifiant, motDePasse);
-      navigate(ROLE_HOME[user.role] ?? "/profil");
+      navigate(ROLE_HOME[user.role] ?? "/profile");
     } catch (err) {
       setError(err.message || "Une erreur est survenue. Réessayez.");
     } finally {
