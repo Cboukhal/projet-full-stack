@@ -1,0 +1,52 @@
+:root {
+  /* Couleurs de marque */
+  --color-blue: #1c7fb0;
+  --color-blue-dark: #125e85;
+  --color-orange: #e8963c;
+
+  /* Texte */
+  --color-text-dark: #232323;
+  --color-text-gray: #6b6b6b;
+  --color-text-gray-light: #9aa3a8;
+
+  /* Surfaces */
+  --color-white: #ffffff;
+  --color-border: #d8dde0;
+  --color-icon-bg: #e7f1f6;
+  --color-bg-field: #fafbfc;
+
+  /* États */
+  --color-success: #2e8b57;
+  --color-success-bg: #e2f5e8;
+  --color-warning: var(--color-orange);
+  --color-danger: #b0453f;
+
+  /* Rayons & ombres */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  /* Typo */
+  --font-base: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  color: var(--color-text-dark);
+  background: var(--color-white);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
