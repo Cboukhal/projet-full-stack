@@ -1,9 +1,9 @@
 import base64
 
-from django.test import Client, SimpleTestCase
+from django.test import Client, TestCase
 
 
-class ApiSmokeTests(SimpleTestCase):
+class ApiSmokeTests(TestCase):
     def setUp(self):
         # Client Django de test pour appeler les routes HTTP.
         self.client = Client()

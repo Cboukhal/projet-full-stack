@@ -1,0 +1,90 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  height: 56px;
+  background: var(--color-blue-dark);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.app-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+}
+
+.app-header__logo-badge {
+  color: var(--color-blue);
+  font-weight: 700;
+}
+
+.app-header__logo-name {
+  color: var(--color-blue);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.app-header__nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.app-header__nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.app-header__nav-link:hover {
+  color: var(--color-white);
+}
+
+.app-header__nav-link--active {
+  color: var(--color-white);
+  border-bottom-color: var(--color-white);
+}
+
+.app-header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+}
+
+.app-footer {
+  background: var(--color-blue-dark);
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 10px;
+}
+
+@media (max-width: 720px) {
+  .app-body {
+    grid-template-columns: 1fr;
+  }
+}

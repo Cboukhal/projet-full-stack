@@ -2,36 +2,41 @@ import base64
 import json
 from time import time
 
+from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from .data import USERS
+from .models import DemoUser
 
 
-# On enlève le mot de passe avant de renvoyer l'utilisateur au frontend.
 def _public_user(user):
-    return {key: value for key, value in user.items() if key != 'motDePasse'}
+    # On enlève le mot de passe avant de renvoyer l'utilisateur au frontend.
+    return {
+        'identifiant': user.identifiant,
+        'role': user.role,
+        'nom': user.nom,
+        'email': user.email,
+        'telephone': user.telephone,
+        'specialite': user.specialite,
+    }
 
 
-# Recherche simple dans les données de démonstration.
 def _find_user_by_credentials(identifiant, mot_de_passe):
-    for user in USERS:
-        if user['identifiant'] == identifiant and user['motDePasse'] == mot_de_passe:
-            return user
+    # Recherche simple dans les données de démonstration.
+    user = DemoUser.objects.filter(identifiant=identifiant).first()
+    if user and check_password(mot_de_passe, user.mot_de_passe):
+        return user
     return None
 
 
-# Le profil est récupéré à partir du rôle choisi.
 def _find_user_by_role(role):
-    for user in USERS:
-        if user['role'] == role:
-            return user
-    return None
+    # Le profil est récupéré à partir du rôle choisi.
+    return DemoUser.objects.filter(role=role).first()
 
 
-# Jeton fictif suffisant pour le niveau du projet.
 def _make_token(identifiant):
+    # Jeton fictif suffisant pour le niveau du projet.
     payload = f'{identifiant}:{int(time())}'
     return base64.b64encode(payload.encode('utf-8')).decode('utf-8')
 
@@ -60,7 +65,7 @@ def login_view(request):
     # Le frontend reçoit un faux token et la fiche utilisateur sans mot de passe.
     return JsonResponse(
         {
-            'token': _make_token(user['identifiant']),
+            'token': _make_token(user.identifiant),
             'user': _public_user(user),
         }
     )
