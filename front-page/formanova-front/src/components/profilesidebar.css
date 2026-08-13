@@ -1,0 +1,47 @@
+.profile-sidebar {
+  background: var(--color-white);
+  padding: 40px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.profile-sidebar__avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.profile-sidebar__name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--color-text-dark);
+}
+
+.profile-sidebar__role {
+  margin: 2px 0 20px;
+  font-size: 0.85rem;
+  color: var(--color-text-gray);
+}
+
+.profile-sidebar__info {
+  font-size: 0.8rem;
+  color: var(--color-text-gray);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.profile-sidebar__info p {
+  margin: 0;
+}
+
+.profile-sidebar__edit {
+  width: 100%;
+}

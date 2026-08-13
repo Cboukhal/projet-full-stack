@@ -1,0 +1,28 @@
+.course-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.course-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.course-card__title {
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+}
+
+.course-card__subtitle,
+.course-card__meta {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-gray);
+}
