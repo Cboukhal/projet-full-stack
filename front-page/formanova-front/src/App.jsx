@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+// import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
-import Profil from "./pages/Profil";
+// import Profil from "./pages/Profil";
 
 export default function App() {
   return (
@@ -11,14 +11,14 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
 
-          <Route
+          {/* <Route
             path="/profil"
             element={
               <ProtectedRoute>
                 <Profil />
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           {/* Redirection par défaut vers le login pour l'instant.
               On ajoutera les autres routes (accueil, calendrier, espace
