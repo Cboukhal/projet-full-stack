@@ -1,0 +1,141 @@
+.calendar-page {
+  padding: 40px 48px;
+  background: var(--color-white);
+}
+
+.calendar-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.calendar-page__title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.calendar-page__note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-blue);
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-top: 6px;
+}
+
+.calendar-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+  cursor: pointer;
+}
+
+.calendar-legend__item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-orange);
+  cursor: pointer;
+}
+
+.calendar-card {
+  border: 1px solid var(--color-text-dark);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  grid-template-rows: auto 1fr;
+  column-gap: 16px;
+  min-width: 760px;
+}
+
+.calendar-day-label {
+  grid-row: 1;
+  padding-bottom: 16px;
+  font-size: 0.9rem;
+  color: var(--color-text-gray);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.calendar-day-body {
+  grid-row: 2;
+  min-height: 700px;
+  border-right: 1px solid var(--color-border);
+}
+
+.calendar-day-body--today {
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-md);
+}
+
+.calendar-event {
+  grid-row: 2;
+  align-self: start;
+  margin-top: 24px;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.calendar-event:hover {
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
+
+.calendar-event--promotion {
+  background: var(--color-icon-bg);
+}
+
+.calendar-event--unite {
+  background: rgba(232, 150, 60, 0.12);
+  border: 1px solid var(--color-orange);
+}
+
+.calendar-event__title {
+  margin: 0 0 4px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text-dark);
+}
+
+.calendar-event__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-gray);
+}
+
+@media (max-width: 900px) {
+  .calendar-page {
+    padding: 20px;
+  }
+
+  .calendar-page__header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .calendar-card {
+    padding: 16px;
+  }
+
+  .calendar-day-body {
+    min-height: 420px;
+  }
+}

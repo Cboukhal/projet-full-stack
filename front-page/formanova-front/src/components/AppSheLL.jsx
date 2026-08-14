@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import logo from "../assets/images/logo.jpg";
 import "./AppShell.css";
 
 function AvatarIcon() {
@@ -16,31 +17,35 @@ function AvatarIcon() {
 }
 
 /**
- * Coquille commune à toutes les pages affichées après connexion.
- * navItems: [{ to, label }] - liens affichés au centre du bandeau, propres au rôle connecté.
+ * Coquille commune à toutes les pages affichées après connexion :
+ * logo à gauche, titre de la page + liens complémentaires centrés, avatar (-> /profil) à droite.
+ *
+ * title: libellé de la page courante (ex: "Profil", "Calendrier").
+ * navLinks: liens optionnels affichés à côté du titre (ex: "Mon calendrier" sur la page Profil,
+ *           visible uniquement pour les rôles qui y ont accès).
  */
-export default function AppShell({ navItems = [], children }) {
+export default function AppShell({ title, navLinks = [], children }) {
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__logo">
-          <span className="app-header__logo-badge">F</span>
-          <span className="app-header__logo-name">Formanova</span>
+          <img src={logo} alt="Formanova" className="app-header__logo-img" />
         </div>
 
-        <nav className="app-header__nav">
-          {navItems.map((item) => (
+        <div className="app-header__center">
+          {title && <span className="app-header__title">{title}</span>}
+          {navLinks.map((link) => (
             <NavLink
-              key={item.to}
-              to={item.to}
+              key={link.to}
+              to={link.to}
               className={({ isActive }) =>
                 "app-header__nav-link" + (isActive ? " app-header__nav-link--active" : "")
               }
             >
-              {item.label}
+              {link.label}
             </NavLink>
           ))}
-        </nav>
+        </div>
 
         <NavLink to="/profil" className="app-header__avatar" aria-label="Mon profil">
           <AvatarIcon />

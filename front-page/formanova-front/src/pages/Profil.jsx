@@ -27,37 +27,28 @@ const ROLE_LABELS = {
   referente: "Référente",
 };
 
-// Liens de nav propres à chaque rôle. "Mon calendrier" pointe vers une page
-// pas encore construite - à ajuster/retirer si ce n'est pas voulu.
-const NAV_ITEMS = {
-  eleve: [
-    { to: "/profil", label: "Profil" },
-    { to: "/calendrier", label: "Mon calendrier" },
-  ],
-  formateur: [{ to: "/profil", label: "Profil" }],
-  administrateur: [{ to: "/profil", label: "Profil" }],
-};
-
 export default function Profil() {
   const { user, role } = useAuth();
 
   const mock = MOCK_INFO[role] ?? { infoLines: [] };
-  const navItems = NAV_ITEMS[role] ?? [{ to: "/profil", label: "Profil" }];
+  const navLinks = role === "eleve" ? [{ to: "/calendrier", label: "Mon calendrier" }] : [];
 
   return (
-    <AppShell navItems={navItems}>
-      <ProfileSidebar
-        name={user?.nom ?? "Utilisateur"}
-        role={ROLE_LABELS[role] ?? role}
-        infoLines={mock.infoLines}
-        onEdit={() => console.log("TODO: ouvrir l'édition du profil")}
-      />
+    <AppShell title="Profil" navLinks={navLinks}>
+      <div className="profil-layout">
+        <ProfileSidebar
+          name={user?.nom ?? "Utilisateur"}
+          role={ROLE_LABELS[role] ?? role}
+          infoLines={mock.infoLines}
+          onEdit={() => console.log("TODO: ouvrir l'édition du profil")}
+        />
 
-      <section className="profil-content">
-        {role === "formateur" && <FormateurContent />}
-        {role === "eleve" && <EleveContent />}
-        {role === "administrateur" && <AdministrateurContent />}
-      </section>
+        <section className="profil-content">
+          {role === "formateur" && <FormateurContent />}
+          {role === "eleve" && <EleveContent />}
+          {role === "administrateur" && <AdministrateurContent />}
+        </section>
+      </div>
     </AppShell>
   );
 }

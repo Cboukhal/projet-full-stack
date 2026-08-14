@@ -3,6 +3,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Profil from "./pages/Profil";
+import Calendrier from "./pages/Calendrier";
+import CourseDetail from "./pages/CourseDetail";
 
 export default function App() {
   return (
@@ -20,9 +22,24 @@ export default function App() {
             }
           />
 
-          {/* Redirection par défaut vers le login pour l'instant.
-              On ajoutera les autres routes (accueil, calendrier, espace
-              référente...) au fur et à mesure. */}
+          <Route
+            path="/calendrier"
+            element={
+              <ProtectedRoute allowedRoles={["eleve"]}>
+                <Calendrier />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/calendrier/:courseId"
+            element={
+              <ProtectedRoute allowedRoles={["eleve"]}>
+                <CourseDetail />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

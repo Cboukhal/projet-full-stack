@@ -9,6 +9,8 @@
   background: var(--color-blue-dark);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  position: relative;
   padding: 0 20px;
   flex-shrink: 0;
 }
@@ -16,36 +18,42 @@
 .app-header__logo {
   display: flex;
   align-items: center;
-  gap: 8px;
   background: var(--color-white);
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
+  padding: 4px 14px;
+  height: 40px;
 }
 
-.app-header__logo-badge {
-  color: var(--color-blue);
-  font-weight: 700;
+.app-header__logo-img {
+  height: 100%;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+  display: block;
 }
 
-.app-header__logo-name {
-  color: var(--color-blue);
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.app-header__nav {
-  flex: 1;
+.app-header__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  justify-content: center;
-  gap: 32px;
+  align-items: center;
+  gap: 28px;
+  white-space: nowrap;
+}
+
+.app-header__title {
+  margin: 0;
+  color: var(--color-white);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .app-header__nav-link {
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 0.95rem;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
 }
 
 .app-header__nav-link:hover {
@@ -54,7 +62,7 @@
 
 .app-header__nav-link--active {
   color: var(--color-white);
-  border-bottom-color: var(--color-white);
+  text-decoration: underline;
 }
 
 .app-header__avatar {
@@ -67,12 +75,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .app-body {
   flex: 1;
-  display: grid;
-  grid-template-columns: 300px 1fr;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-footer {
@@ -81,10 +90,4 @@
   text-align: center;
   font-size: 0.8rem;
   padding: 10px;
-}
-
-@media (max-width: 720px) {
-  .app-body {
-    grid-template-columns: 1fr;
-  }
 }
