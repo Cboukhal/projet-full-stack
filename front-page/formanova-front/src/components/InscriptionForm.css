@@ -1,0 +1,47 @@
+.inscription-form {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.inscription-form__title {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__subtitle {
+  margin: 0 0 20px;
+  font-size: 0.85rem;
+  color: var(--color-text-gray);
+}
+
+.inscription-form__note {
+  background: var(--color-icon-bg);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.inscription-form__note-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__note-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-gray);
+}
+
+@media (max-width: 900px) {
+  .inscription-form {
+    width: 100%;
+  }
+}
