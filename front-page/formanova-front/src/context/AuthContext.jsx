@@ -1,8 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { login as loginApi } from "../api/authApi";
+import { login as loginApi, logout as logoutApi } from "../api/authApi";
 
+// Contexte React qui partage la session (token + utilisateur) dans toute l'app.
 const AuthContext = createContext(null);
 
+// Clé utilisée pour persister la session dans le localStorage du navigateur.
 const STORAGE_KEY = "formanova_auth";
 
 export function AuthProvider({ children }) {
@@ -22,6 +24,7 @@ export function AuthProvider({ children }) {
     setIsLoading(false);
   }, []);
 
+  // Connexion : appelle le backend puis mémorise la session en état et en localStorage.
   async function login(identifiant, motDePasse) {
     const result = await loginApi(identifiant, motDePasse);
     setAuth(result);
@@ -29,11 +32,14 @@ export function AuthProvider({ children }) {
     return result;
   }
 
+  // Déconnexion : invalide le token côté serveur puis nettoie la session locale.
   function logout() {
+    logoutApi(auth?.token);
     setAuth(null);
     localStorage.removeItem(STORAGE_KEY);
   }
 
+  // Valeur exposée aux composants via useAuth().
   const value = {
     token: auth?.token ?? null,
     user: auth?.user ?? null,

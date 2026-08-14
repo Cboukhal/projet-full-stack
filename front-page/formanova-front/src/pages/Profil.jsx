@@ -27,19 +27,21 @@ const NAV_ITEMS = {
 };
 
 export default function Profil() {
-  const { user, role } = useAuth();
+  const { user, role, token } = useAuth();
+  // On affiche d'abord la fiche déjà connue (reçue au login), puis on la rafraîchit depuis le backend.
   const [profile, setProfile] = useState(user);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadProfile() {
-      if (!role) {
+      if (!token) {
         return;
       }
 
       try {
-        const remoteProfile = await getProfil(role);
+        // Le profil renvoyé dépend du token, pas d'un paramètre choisi côté client.
+        const remoteProfile = await getProfil(token);
         if (isMounted && remoteProfile) {
           setProfile(remoteProfile);
         }
@@ -50,11 +52,13 @@ export default function Profil() {
 
     loadProfile();
 
+    // Évite de mettre à jour l'état si le composant est démonté avant la fin de l'appel.
     return () => {
       isMounted = false;
     };
-  }, [role]);
+  }, [token]);
 
+  // Construit les lignes d'info affichées sous le nom (email, téléphone, spécialité...).
   const infoLines = useMemo(() => {
     const lines = [profile?.email, profile?.telephone]
       .filter(Boolean)

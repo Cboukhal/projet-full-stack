@@ -1,5 +1,7 @@
+// Adresse du backend Django, configurable via une variable d'environnement Vite.
 const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
 
+// Récupère un message d'erreur lisible renvoyé par le backend, ou un message par défaut.
 async function readErrorMessage(response, fallbackMessage) {
   try {
     const payload = await response.json();
@@ -9,6 +11,7 @@ async function readErrorMessage(response, fallbackMessage) {
   }
 }
 
+// Connexion : envoie identifiant/mot de passe, reçoit un token + la fiche utilisateur.
 export async function login(identifiant, motDePasse) {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
@@ -25,10 +28,16 @@ export async function login(identifiant, motDePasse) {
   return await response.json();
 }
  
-export async function getProfil(role) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/profile?role=${encodeURIComponent(role)}`);
+// Récupère le profil de l'utilisateur connecté à partir de son token (pas de la BDD locale).
+export async function getProfil(token) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if (response.status === 404) {
+  // Token absent/invalide ou profil introuvable : on laisse l'appelant gérer le cas "pas de profil".
+  if (response.status === 401 || response.status === 404) {
     return null;
   }
 
@@ -37,4 +46,22 @@ export async function getProfil(role) {
   }
 
   return await response.json();
+}
+
+// Déconnexion : invalide le token côté serveur pour empêcher sa réutilisation.
+export async function logout(token) {
+  if (!token) {
+    return;
+  }
+
+  try {
+    await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch {
+    // Le logout local doit réussir même si le backend est injoignable.
+  }
 }

@@ -1,6 +1,6 @@
-import base64
 import json
-from time import time
+import secrets
+from functools import wraps
 
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
@@ -30,15 +30,32 @@ def _find_user_by_credentials(identifiant, mot_de_passe):
     return None
 
 
-def _find_user_by_role(role):
-    # Le profil est récupéré à partir du rôle choisi.
-    return DemoUser.objects.filter(role=role).first()
+def _make_token():
+    # Jeton aléatoire non devinable, propre à chaque connexion.
+    return secrets.token_hex(32)
 
 
-def _make_token(identifiant):
-    # Jeton fictif suffisant pour le niveau du projet.
-    payload = f'{identifiant}:{int(time())}'
-    return base64.b64encode(payload.encode('utf-8')).decode('utf-8')
+def _get_bearer_token(request):
+    # Extrait le jeton de l'en-tête "Authorization: Bearer <token>".
+    header = request.headers.get('Authorization', '')
+    if not header.startswith('Bearer '):
+        return None
+    return header[len('Bearer '):].strip() or None
+
+
+def require_token_auth(view_func):
+    # Décorateur : vérifie le token et attache l'utilisateur correspondant à la requête.
+    # Bloque l'accès (401) si le token est absent ou ne correspond à aucun utilisateur connecté.
+    @wraps(view_func)
+    def wrapped(request, *args, **kwargs):
+        token = _get_bearer_token(request)
+        user = DemoUser.objects.filter(token=token).first() if token else None
+        if not user:
+            return JsonResponse({'detail': 'Authentification requise.'}, status=401)
+        request.demo_user = user
+        return view_func(request, *args, **kwargs)
+
+    return wrapped
 
 
 @csrf_exempt
@@ -48,6 +65,10 @@ def login_view(request):
     try:
         payload = json.loads(request.body.decode('utf-8') or '{}')
     except (UnicodeDecodeError, json.JSONDecodeError):
+        return JsonResponse({'detail': 'Requête invalide.'}, status=400)
+
+    # Le corps doit être un objet JSON (ex: {"identifiant": ...}), pas une liste ou un scalaire.
+    if not isinstance(payload, dict):
         return JsonResponse({'detail': 'Requête invalide.'}, status=400)
 
     # On récupère les champs envoyés par le formulaire React.
@@ -62,26 +83,30 @@ def login_view(request):
     if not user:
         return JsonResponse({'detail': 'Identifiant ou mot de passe incorrect.'}, status=401)
 
-    # Le frontend reçoit un faux token et la fiche utilisateur sans mot de passe.
+    # On génère un nouveau token à chaque connexion (invalide les sessions précédentes).
+    user.token = _make_token()
+    user.save(update_fields=['token'])
+
     return JsonResponse(
         {
-            'token': _make_token(user.identifiant),
+            'token': user.token,
             'user': _public_user(user),
         }
     )
 
 
 @require_GET
+@require_token_auth
 def profile_view(request):
-    # Retourne les infos d'un utilisateur à partir de son rôle.
-    role = request.GET.get('role', '').strip()
-    if not role:
-        return JsonResponse({'detail': 'Le rôle est requis.'}, status=400)
+    # Retourne uniquement les infos de l'utilisateur authentifié par son token.
+    return JsonResponse(_public_user(request.demo_user))
 
-    # Chaque rôle correspond à un profil de démonstration.
-    user = _find_user_by_role(role)
-    if not user:
-        return JsonResponse({'detail': 'Profil introuvable.'}, status=404)
 
-    # On renvoie seulement les données publiques.
-    return JsonResponse(_public_user(user))
+@csrf_exempt
+@require_POST
+@require_token_auth
+def logout_view(request):
+    # Invalide le token côté serveur pour que d'anciennes copies ne fonctionnent plus.
+    request.demo_user.token = None
+    request.demo_user.save(update_fields=['token'])
+    return JsonResponse({'detail': 'Déconnecté.'})
