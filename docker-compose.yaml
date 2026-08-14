@@ -26,8 +26,6 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend
-      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://frontend:5173
     volumes:
       - ./backend:/app
     ports:
@@ -43,7 +41,9 @@ services:
     container_name: formanova-frontend
     restart: unless-stopped
     environment:
-      VITE_BACKEND_URL: http://backend:8000
+      # Ce code s'exécute dans le navigateur de l'hôte, pas dans le réseau
+      # Docker : il doit donc utiliser une adresse joignable depuis l'hôte.
+      VITE_BACKEND_URL: http://localhost:8000
     volumes:
       - ./front-page/formanova-front:/app
       - frontend_node_modules:/app/node_modules
