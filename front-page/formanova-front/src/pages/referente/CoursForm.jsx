@@ -4,7 +4,10 @@ import ReferenteLayout from "../../components/ReferenteLayout";
 import FormCard from "../../components/FormCard";
 import TextField from "../../components/TextField";
 import Button from "../../components/Button";
+import Modal from "../../components/Modal";
+import SelectableList from "../../components/SelectableList";
 import { COURS } from "../../api/coursMock";
+import { CURSUS } from "../../api/cursusMock";
 import "./ReferenteForms.css";
 
 export default function CoursForm() {
@@ -17,11 +20,39 @@ export default function CoursForm() {
   const [duree, setDuree] = useState(existing?.duree ?? "");
   const [description, setDescription] = useState(existing?.description ?? "");
   const [objectifs, setObjectifs] = useState(existing?.objectifs ?? "");
+  const [cursusAssocies, setCursusAssocies] = useState(existing?.cursusAssocies ?? []);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCursusId, setSelectedCursusId] = useState(null);
+
+  const cursusDisponibles = CURSUS.filter(
+    (c) => !cursusAssocies.some((a) => a.cursus === c.nom)
+  );
+
+  const handleAssocier = () => {
+    const cursus = CURSUS.find((c) => c.id === selectedCursusId);
+    if (!cursus) return;
+
+    // TODO: brancher l'appel API une fois le back prêt
+    setCursusAssocies((prev) => [
+      ...prev,
+      { cursus: cursus.nom, position: prev.length + 1 },
+    ]);
+    setSelectedCursusId(null);
+    setModalOpen(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO: brancher l'appel API une fois le back prêt
-    console.log("Enregistrer cours :", { nom, technologie, duree, description, objectifs });
+    console.log("Enregistrer cours :", {
+      nom,
+      technologie,
+      duree,
+      description,
+      objectifs,
+      cursusAssocies,
+    });
   };
 
   return (
@@ -94,7 +125,7 @@ export default function CoursForm() {
           className="referente-detail-grid__col"
         >
           <div className="ordre-list">
-            {(existing?.cursusAssocies ?? []).map((c) => (
+            {cursusAssocies.map((c) => (
               <div key={c.cursus} className="ordre-item ordre-item--static">
                 <span className="ordre-item__body">
                   <span className="ordre-item__title">{c.cursus}</span>
@@ -107,12 +138,32 @@ export default function CoursForm() {
           <button
             type="button"
             className="referente-add-row"
-            onClick={() => console.log("TODO: associer ce cours à un cursus")}
+            onClick={() => setModalOpen(true)}
           >
             + Associer à un cursus
           </button>
         </FormCard>
       </div>
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Associer ce cours à un cursus"
+      >
+        <SelectableList
+          items={cursusDisponibles.map((c) => ({
+            id: c.id,
+            label: c.nom,
+            sublabel: c.filiere,
+          }))}
+          selectedId={selectedCursusId}
+          onSelect={setSelectedCursusId}
+        />
+
+        <Button onClick={handleAssocier} disabled={!selectedCursusId}>
+          Associer
+        </Button>
+      </Modal>
     </ReferenteLayout>
   );
 }

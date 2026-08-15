@@ -4,7 +4,10 @@ import ReferenteLayout from "../../components/ReferenteLayout";
 import FormCard from "../../components/FormCard";
 import TextField from "../../components/TextField";
 import Button from "../../components/Button";
+import Modal from "../../components/Modal";
+import SelectableList from "../../components/SelectableList";
 import { CURSUS } from "../../api/cursusMock";
+import { COURS } from "../../api/coursMock";
 import "./ReferenteForms.css";
 
 function withPrerequis(list) {
@@ -26,6 +29,13 @@ export default function CursusForm() {
   const [ordre, setOrdre] = useState(() => withPrerequis(existing?.ordrePedagogique ?? []));
   const [dragIndex, setDragIndex] = useState(null);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCoursId, setSelectedCoursId] = useState(null);
+
+  const coursDisponibles = COURS.filter(
+    (c) => !ordre.some((o) => o.titre === c.nom)
+  );
+
   const handleDrop = (index) => {
     if (dragIndex === null || dragIndex === index) return;
     setOrdre((prev) => {
@@ -35,6 +45,16 @@ export default function CursusForm() {
       return withPrerequis(next);
     });
     setDragIndex(null);
+  };
+
+  const handleAjouter = () => {
+    const cours = COURS.find((c) => c.id === selectedCoursId);
+    if (!cours) return;
+
+    // TODO: brancher l'appel API une fois le back prêt
+    setOrdre((prev) => withPrerequis([...prev, { id: cours.id, titre: cours.nom }]));
+    setSelectedCoursId(null);
+    setModalOpen(false);
   };
 
   const handleSubmit = (e) => {
@@ -135,12 +155,28 @@ export default function CursusForm() {
           <button
             type="button"
             className="referente-add-row"
-            onClick={() => console.log("TODO: ajouter un cours au cursus")}
+            onClick={() => setModalOpen(true)}
           >
             + Ajouter un cours
           </button>
         </FormCard>
       </div>
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Ajouter un cours au cursus">
+        <SelectableList
+          items={coursDisponibles.map((c) => ({
+            id: c.id,
+            label: c.nom,
+            sublabel: c.technologie,
+          }))}
+          selectedId={selectedCoursId}
+          onSelect={setSelectedCoursId}
+        />
+
+        <Button onClick={handleAjouter} disabled={!selectedCoursId}>
+          Ajouter
+        </Button>
+      </Modal>
     </ReferenteLayout>
   );
 }
