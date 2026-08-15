@@ -1,13 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReferenteLayout from "../../components/ReferenteLayout";
 import ListPageHeader from "../../components/ListPageHeader";
 import DataTable from "../../components/DataTable";
-
-// TODO: remplacer par les vraies données du back
-const FILIERES = [
-  { id: 1, nom: "Développement", nbCursus: 4, nbEleves: 42, statut: "Actif" },
-  { id: 2, nom: "Systèmes et Réseaux", nbCursus: 3, nbEleves: 22, statut: "Actif" },
-];
+import { FILIERES } from "../../api/filieresMock";
 
 const COLUMNS = [
   { key: "nom", label: "Nom", width: "2fr" },
@@ -17,9 +13,12 @@ const COLUMNS = [
 ];
 
 export default function Filieres() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const rows = FILIERES.filter((f) => f.nom.toLowerCase().includes(search.toLowerCase()));
+  const rows = FILIERES.filter((f) => f.nom.toLowerCase().includes(search.toLowerCase())).map(
+    (f) => ({ ...f, nbCursus: f.cursusRattaches.length })
+  );
 
   return (
     <ReferenteLayout>
@@ -30,13 +29,13 @@ export default function Filieres() {
         searchValue={search}
         onSearchChange={setSearch}
         actionLabel="+ Nouvelle filière"
-        onAction={() => console.log("TODO: ouvrir le formulaire de création de filière")}
+        onAction={() => navigate("/espace-referente/filieres/nouveau")}
       />
 
       <DataTable
         columns={COLUMNS}
         rows={rows}
-        onRowClick={(row) => console.log("TODO: détail filière", row)}
+        onRowClick={(row) => navigate(`/espace-referente/filieres/${row.id}`)}
       />
     </ReferenteLayout>
   );

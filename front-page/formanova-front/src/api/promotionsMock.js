@@ -1,0 +1,58 @@
+// TODO: remplacer par les vraies données du back
+
+export const PROMOTIONS = [
+  {
+    id: "cda-2026-a",
+    titre: "CDA — Promo 2026-A",
+    cursusId: "cda",
+    cursusNom: "CDA",
+    dateDebut: "12 jan 2026",
+    dateFinEstimee: "15 déc 2026",
+    effectifMax: 16,
+    elevesInscrits: 14,
+    statut: "en cours",
+    planning: [
+      {
+        coursId: 1,
+        titre: "Algorithmique + Init. Programmation",
+        dateDebut: "12 jan 2026",
+        dateFin: "23 jan 2026",
+        statut: "planifié",
+      },
+      {
+        coursId: 2,
+        titre: "Web Client HTML & CSS",
+        dateDebut: "26 jan 2026",
+        dateFin: "6 fév 2026",
+        statut: "planifié",
+      },
+      { coursId: 3, titre: "JavaScript initiation", dateDebut: "", dateFin: "", statut: "à planifier" },
+      { coursId: 4, titre: "Programmation Orientée Objet", dateDebut: "", dateFin: "", statut: "à planifier" },
+      { coursId: 5, titre: "Langage SQL / SQL Server", dateDebut: "", dateFin: "", statut: "à planifier" },
+    ],
+  },
+  {
+    id: "tssr-2026-b",
+    titre: "TSSR — Promo 2026-B",
+    cursusId: "tssr",
+    cursusNom: "TSSR",
+    dateDebut: "-",
+    dateFinEstimee: "-",
+    effectifMax: 16,
+    elevesInscrits: 10,
+    statut: "en cours",
+    planning: [],
+  },
+  {
+    id: "asr-2026-c",
+    titre: "ASR — Promo 2026-C",
+    cursusId: "asr",
+    cursusNom: "ASR",
+    dateDebut: "-",
+    dateFinEstimee: "-",
+    effectifMax: 16,
+    elevesInscrits: 12,
+    statut: "à venir",
+    planning: [],
+  },
+];

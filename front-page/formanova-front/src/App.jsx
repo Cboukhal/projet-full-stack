@@ -10,6 +10,12 @@ import Filieres from "./pages/referente/Filieres";
 import Cursus from "./pages/referente/Cursus";
 import Cours from "./pages/referente/Cours";
 import Promotions from "./pages/referente/Promotions";
+import FiliereForm from "./pages/referente/FiliereForm";
+import CursusForm from "./pages/referente/CursusForm";
+import CoursForm from "./pages/referente/CoursForm";
+import PromotionDetail from "./pages/referente/PromotionDetail";
+import PlanifierCours from "./pages/referente/PlanifierCours";
+import PlanifierPromotion from "./pages/referente/PlanifierPromotion";
 
 export default function App() {
   return (
@@ -96,6 +102,60 @@ export default function App() {
           path="*" 
           element={<Navigate to="/login" replace />
           } />
+
+          <Route 
+          path="/espace-referente/filieres/nouveau" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <FiliereForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/filieres/:filiereId" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <FiliereForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/cursus/nouveau" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <CursusForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/cursus/:cursusId" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <CursusForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/cursus/:cursusId/planifier-promotion" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <PlanifierPromotion />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/cours/nouveau" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <CoursForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/cours/:coursId" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <CoursForm />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/promotions/:promoId" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <PromotionDetail />
+            </ProtectedRoute>} />
+
+          <Route 
+          path="/espace-referente/promotions/:promoId/planifier-cours" 
+          element={<ProtectedRoute allowedRoles={["referente"]}>
+            <PlanifierCours />
+          </ProtectedRoute>} />
           
         </Routes>
       </BrowserRouter>

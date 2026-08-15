@@ -1,16 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReferenteLayout from "../../components/ReferenteLayout";
 import ListPageHeader from "../../components/ListPageHeader";
 import DataTable from "../../components/DataTable";
-
-// TODO: remplacer par les vraies données du back
-const CURSUS = [
-  { id: 1, nom: "CDA", filiere: "Développement", nbCours: 24, duree: "11 mois", statut: "Actif" },
-  { id: 2, nom: "TSSR", filiere: "Systèmes et Réseaux", nbCours: 16, duree: "9 mois", statut: "Actif" },
-  { id: 3, nom: "ASR", filiere: "Systèmes et Réseaux", nbCours: 18, duree: "10 mois", statut: "Actif" },
-  { id: 4, nom: "D2WM", filiere: "Développement", nbCours: 14, duree: "8 mois", statut: "Brouillon" },
-  { id: 5, nom: "EADL", filiere: "Développement", nbCours: 20, duree: "12 mois", statut: "Actif" },
-];
+import { CURSUS } from "../../api/cursusMock";
 
 const COLUMNS = [
   { key: "nom", label: "Nom" },
@@ -21,9 +14,12 @@ const COLUMNS = [
 ];
 
 export default function Cursus() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const rows = CURSUS.filter((c) => c.nom.toLowerCase().includes(search.toLowerCase()));
+  const rows = CURSUS.filter((c) => c.nom.toLowerCase().includes(search.toLowerCase())).map(
+    (c) => ({ ...c, duree: `${c.dureeMois} mois` })
+  );
 
   return (
     <ReferenteLayout>
@@ -34,13 +30,13 @@ export default function Cursus() {
         searchValue={search}
         onSearchChange={setSearch}
         actionLabel="+ Nouveau cursus"
-        onAction={() => console.log("TODO: ouvrir le formulaire de création de cursus")}
+        onAction={() => navigate("/espace-referente/cursus/nouveau")}
       />
 
       <DataTable
         columns={COLUMNS}
         rows={rows}
-        onRowClick={(row) => console.log("TODO: détail cursus", row)}
+        onRowClick={(row) => navigate(`/espace-referente/cursus/${row.id}`)}
       />
     </ReferenteLayout>
   );

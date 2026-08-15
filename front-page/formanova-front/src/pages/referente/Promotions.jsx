@@ -1,18 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import ReferenteLayout from "../../components/ReferenteLayout";
 import InscriptionForm from "../../components/InscriptionForm";
+import { PROMOTIONS } from "../../api/promotionsMock";
 import "./Promotions.css";
 
-// TODO: remplacer par les vraies données du back
 const STATS = [
   { id: 1, value: 24, label: "Promotions actives" },
   { id: 2, value: 156, label: "Élèves inscrits" },
   { id: 3, value: 7, label: "Cursus disponibles" },
-];
-
-const PROMOTIONS = [
-  { id: 1, titre: "CDA — Promo 2026-A", meta: "14 élèves · en cours" },
-  { id: 2, titre: "TSSR — Promo 2026-B", meta: "10 élèves · en cours" },
-  { id: 3, titre: "ASR — Promo 2026-C", meta: "12 élèves · à venir" },
 ];
 
 function BookmarkIcon() {
@@ -29,6 +24,8 @@ function BookmarkIcon() {
 }
 
 export default function Promotions() {
+  const navigate = useNavigate();
+
   return (
     <ReferenteLayout>
       <div className="promotions-page">
@@ -51,14 +48,16 @@ export default function Promotions() {
                 key={p.id}
                 type="button"
                 className="promotion-card"
-                onClick={() => console.log("TODO: détail promotion", p)}
+                onClick={() => navigate(`/espace-referente/promotions/${p.id}`)}
               >
                 <span className="promotion-card__icon">
                   <BookmarkIcon />
                 </span>
                 <span className="promotion-card__body">
                   <span className="promotion-card__title">{p.titre}</span>
-                  <span className="promotion-card__meta">{p.meta}</span>
+                  <span className="promotion-card__meta">
+                    {p.elevesInscrits} élèves · {p.statut}
+                  </span>
                 </span>
                 <span className="promotion-card__chevron" aria-hidden="true">
                   ›
@@ -70,7 +69,7 @@ export default function Promotions() {
           <button
             type="button"
             className="promotions-page__add-link"
-            onClick={() => console.log("TODO: ouvrir le formulaire de planification de cursus")}
+            onClick={() => navigate("/espace-referente/cursus")}
           >
             + Planifier un cursus
           </button>
