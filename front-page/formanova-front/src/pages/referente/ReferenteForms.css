@@ -119,8 +119,26 @@
   background: var(--color-bg-field);
 }
 
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
 @media (max-width: 900px) {
   .referente-detail-grid {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .profil-content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .referente-form-submit {
+    width: 100% !important;
+  }
+
+  .ordre-item {
+    padding: 10px 12px;
   }
 }

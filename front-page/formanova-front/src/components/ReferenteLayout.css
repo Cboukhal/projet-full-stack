@@ -10,3 +10,15 @@
   background: var(--color-blue);
   padding: 32px 40px;
 }
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .referente-layout {
+    flex-direction: column;
+  }
+
+  .referente-content {
+    padding: 24px 20px;
+  }
+}

@@ -56,3 +56,30 @@
 .referente-sidebar--collapsed .referente-sidebar__label {
   display: none;
 }
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .referente-sidebar,
+  .referente-sidebar--collapsed {
+    width: 100%;
+    padding: 12px 0;
+  }
+
+  .referente-sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 0 16px;
+  }
+
+  .referente-sidebar__toggle {
+    display: none;
+  }
+
+  .referente-sidebar__link {
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+  }
+}

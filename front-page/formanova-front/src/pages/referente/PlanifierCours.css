@@ -70,3 +70,24 @@
   font-size: 0.8rem;
   color: var(--color-text-gray);
 }
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .referente-detail-grid {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .profil-content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .planning-row__dates {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

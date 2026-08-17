@@ -120,8 +120,25 @@
   text-decoration: underline;
 }
 
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
 @media (max-width: 900px) {
   .promotions-page {
     flex-direction: column;
   }
+
+  .promotions-stats {
+    display: none; /* remplacées par le résumé texte mobile */
+  }
+
+  .promotions-summary-mobile {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 16px;
+  }
+}
+
+.promotions-summary-mobile {
+  display: none;
 }

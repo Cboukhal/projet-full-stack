@@ -69,3 +69,16 @@
   color: var(--color-text-gray);
   font-size: 0.85rem;
 }
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .data-table {
+    padding: 8px 16px;
+    overflow-x: auto;
+  }
+
+  .data-table__row {
+    min-width: 480px;
+  }
+}

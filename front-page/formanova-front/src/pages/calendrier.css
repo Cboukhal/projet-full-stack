@@ -121,6 +121,8 @@
   color: var(--color-text-gray);
 }
 
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
 @media (max-width: 900px) {
   .calendar-page {
     padding: 20px;
@@ -133,6 +135,7 @@
 
   .calendar-card {
     padding: 16px;
+    overflow-x: auto;   /* ← ligne ajoutée */
   }
 
   .calendar-day-body {

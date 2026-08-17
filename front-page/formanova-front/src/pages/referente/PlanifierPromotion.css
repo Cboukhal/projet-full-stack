@@ -71,3 +71,47 @@
 .wizard-back:hover {
   color: var(--color-text-dark);
 }
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .wizard-steps {
+    display: none;
+  }
+
+  .wizard-step-compact {
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    margin-bottom: 16px;
+  }
+}
+
+.wizard-step-compact {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .wizard-steps {
+    gap: 4px;
+  }
+
+  .wizard-step__label {
+    display: none;
+  }
+
+  .wizard-step__line {
+    width: 20px;
+  }
+
+  .wizard-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+  }
+}

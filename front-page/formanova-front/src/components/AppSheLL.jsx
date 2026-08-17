@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import logo from "../assets/images/logo.jpg";
+import { useAuth } from "../context/AuthContext";
 import "./AppShell.css";
 
 function AvatarIcon() {
@@ -16,15 +17,23 @@ function AvatarIcon() {
   );
 }
 
-/**
- * Coquille commune à toutes les pages affichées après connexion :
- * logo à gauche, titre de la page + liens complémentaires centrés, avatar (-> /profil) à droite.
- *
- * title: libellé de la page courante (ex: "Profil", "Calendrier").
- * navLinks: liens optionnels affichés à côté du titre (ex: "Mon calendrier" sur la page Profil,
- *           visible uniquement pour les rôles qui y ont accès).
- */
+// Liens affichés dans la tabbar mobile fixe en bas d'écran.
+// "Profil" est toujours présent ; "Calendrier" seulement pour l'élève,
+// à adapter si d'autres rôles doivent avoir des liens spécifiques.
+function getTabbarLinks(role) {
+  const links = [{ to: "/profil", label: "Profil" }];
+
+  if (role === "eleve") {
+    links.splice(1, 0, { to: "/calendrier", label: "Calendrier" });
+  }
+
+  return links;
+}
+
 export default function AppShell({ title, navLinks = [], children }) {
+  const { role } = useAuth();
+  const tabbarLinks = getTabbarLinks(role);
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -55,6 +64,20 @@ export default function AppShell({ title, navLinks = [], children }) {
       <main className="app-body">{children}</main>
 
       <footer className="app-footer">Aide · Mentions légales</footer>
+
+      <nav className="mobile-tabbar">
+        {tabbarLinks.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            className={({ isActive }) =>
+              "mobile-tabbar__link" + (isActive ? " mobile-tabbar__link--active" : "")
+            }
+          >
+            {link.label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

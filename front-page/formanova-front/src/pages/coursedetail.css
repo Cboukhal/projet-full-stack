@@ -159,16 +159,20 @@
   color: var(--color-text-gray);
 }
 
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
 @media (max-width: 900px) {
   .course-detail {
-    padding: 20px;
+    padding: 16px;
   }
 
   .course-detail__grid {
     flex-direction: column;
   }
 
+  .course-detail__main,
   .course-detail__sidebar {
     width: 100%;
+    padding: 24px;
   }
 }
