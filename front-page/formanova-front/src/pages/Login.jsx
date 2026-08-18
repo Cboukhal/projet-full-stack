@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import AuthLayout from "../components/AuthLayout.jsx";
-import TextField from "../components/TextField.jsx";
-import Button from "../components/button.jsx";
-import "./login.css";
+import { useAuth } from "../context/AuthContext";
+import AuthLayout from "../components/AuthLayout";
+import TextField from "../components/TextField";
+import Button from "../components/Button";
+import "./Login.css";
 
 const ROLE_HOME = {
   eleve: "/profil",
   formateur: "/profil",
-  referente: "/profil",
+  referente: "/espace-referente",
   administrateur: "/profil",
 };
 

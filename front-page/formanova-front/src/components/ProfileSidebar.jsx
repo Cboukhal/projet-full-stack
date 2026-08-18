@@ -1,5 +1,5 @@
-import Button from "./button.jsx";
-import "./profilesidebar.css";
+import Button from "./Button";
+import "./ProfileSidebar.css";
 
 function PersonIcon() {
   return (

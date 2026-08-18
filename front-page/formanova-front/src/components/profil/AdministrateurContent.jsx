@@ -1,5 +1,5 @@
-import Button from "../button.jsx";
-import "./administrateurcontent.css";
+import Button from "../Button";
+import "./AdministrateurContent.css";
 
 // TODO: remplacer par les vraies données du back
 const UTILISATEURS = [

@@ -39,6 +39,19 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(STORAGE_KEY);
   }
 
+  // Fusionne des champs modifiés dans l'utilisateur courant (après édition du profil)
+  // et les repersiste, pour que le reste de l'app (nom affiché, etc.) reste à jour.
+  function updateUser(patch) {
+    setAuth((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      const next = { ...prev, user: { ...prev.user, ...patch } };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
   // Valeur exposée aux composants via useAuth().
   const value = {
     token: auth?.token ?? null,
@@ -48,6 +61,7 @@ export function AuthProvider({ children }) {
     isLoading,
     login,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

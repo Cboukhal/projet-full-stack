@@ -28,7 +28,7 @@ class SimpleCORSMiddleware:
         if request.method == 'OPTIONS' and origin in allowed_origins:
             response = HttpResponse(status=204)
             self._set_cors_headers(response, origin)
-            response['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+            response['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, DELETE, OPTIONS'
             response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             return response
 

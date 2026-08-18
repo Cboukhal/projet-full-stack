@@ -29,9 +29,6 @@ export default function FormateurContent() {
   return (
     <>
       <h1 className="profil-content__title">Cours et promotions animés</h1>
-      <p className="profil-content__subtitle">
-        Vue en lecture seule de votre planning d'intervention.
-      </p>
 
       {COURS.map((c) => (
         <CourseCard key={c.id} icon={c.icon} title={c.title} subtitle={c.subtitle} />

@@ -7,6 +7,13 @@
 }
 
 .users-toolbar__search {
+  /* flex: 1;
+  max-width: 320px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  font-size: 0.9rem; */
   flex: 1;
   max-width: 320px;
   padding: 10px 14px;
@@ -14,6 +21,8 @@
   border-radius: var(--radius-md);
   background: var(--color-white);
   font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .users-toolbar__add {
@@ -21,6 +30,11 @@
   padding: 10px 18px;
   background: var(--color-white);
   color: var(--color-blue);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .users-toolbar__add:hover {

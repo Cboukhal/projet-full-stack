@@ -1,12 +1,11 @@
 import json
-import secrets
-from functools import wraps
 
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_http_methods
 
+from .auth import make_token, require_token_auth
 from .models import DemoUser
 
 
@@ -30,36 +29,8 @@ def _find_user_by_credentials(identifiant, mot_de_passe):
     return None
 
 
-def _make_token():
-    # Jeton aléatoire non devinable, propre à chaque connexion.
-    return secrets.token_hex(32)
-
-
-def _get_bearer_token(request):
-    # Extrait le jeton de l'en-tête "Authorization: Bearer <token>".
-    header = request.headers.get('Authorization', '')
-    if not header.startswith('Bearer '):
-        return None
-    return header[len('Bearer '):].strip() or None
-
-
-def require_token_auth(view_func):
-    # Décorateur : vérifie le token et attache l'utilisateur correspondant à la requête.
-    # Bloque l'accès (401) si le token est absent ou ne correspond à aucun utilisateur connecté.
-    @wraps(view_func)
-    def wrapped(request, *args, **kwargs):
-        token = _get_bearer_token(request)
-        user = DemoUser.objects.filter(token=token).first() if token else None
-        if not user:
-            return JsonResponse({'detail': 'Authentification requise.'}, status=401)
-        request.demo_user = user
-        return view_func(request, *args, **kwargs)
-
-    return wrapped
-
-
 @csrf_exempt
-@require_POST
+@require_http_methods(['POST'])
 def login_view(request):
     # Connexion simple: identifiant + mot de passe.
     try:
@@ -84,7 +55,7 @@ def login_view(request):
         return JsonResponse({'detail': 'Identifiant ou mot de passe incorrect.'}, status=401)
 
     # On génère un nouveau token à chaque connexion (invalide les sessions précédentes).
-    user.token = _make_token()
+    user.token = make_token()
     user.save(update_fields=['token'])
 
     return JsonResponse(
@@ -95,15 +66,44 @@ def login_view(request):
     )
 
 
-@require_GET
+@csrf_exempt
+@require_http_methods(['GET', 'PATCH'])
 @require_token_auth
 def profile_view(request):
-    # Retourne uniquement les infos de l'utilisateur authentifié par son token.
-    return JsonResponse(_public_user(request.demo_user))
+    # GET : renvoie les infos de l'utilisateur authentifié par son token.
+    if request.method == 'GET':
+        return JsonResponse(_public_user(request.demo_user))
+
+    # PATCH : met à jour la fiche de l'utilisateur authentifié (jamais celle d'un autre).
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return JsonResponse({'detail': 'Requête invalide.'}, status=400)
+
+    if not isinstance(payload, dict):
+        return JsonResponse({'detail': 'Requête invalide.'}, status=400)
+
+    user = request.demo_user
+    # Seuls ces champs sont modifiables ; identifiant, rôle et mot de passe ne passent pas par ici.
+    nom = payload.get('nom', user.nom).strip()
+    email = payload.get('email', user.email).strip()
+    telephone = payload.get('telephone', user.telephone).strip()
+    specialite = payload.get('specialite', user.specialite).strip()
+
+    if not nom or not email:
+        return JsonResponse({'detail': 'Le nom et l\'email sont requis.'}, status=400)
+
+    user.nom = nom
+    user.email = email
+    user.telephone = telephone
+    user.specialite = specialite
+    user.save(update_fields=['nom', 'email', 'telephone', 'specialite'])
+
+    return JsonResponse(_public_user(user))
 
 
 @csrf_exempt
-@require_POST
+@require_http_methods(['POST'])
 @require_token_auth
 def logout_view(request):
     # Invalide le token côté serveur pour que d'anciennes copies ne fonctionnent plus.

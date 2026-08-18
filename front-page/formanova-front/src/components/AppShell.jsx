@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
-import "./appshell.css";
+import logo from "../assets/images/logo.jpg";
+import { useAuth } from "../context/AuthContext";
+import "./AppShell.css";
 
 function AvatarIcon() {
   return (
@@ -15,32 +17,44 @@ function AvatarIcon() {
   );
 }
 
-/**
- * Coquille commune à toutes les pages affichées après connexion.
- * navItems: [{ to, label }] - liens affichés au centre du bandeau, propres au rôle connecté.
- */
-export default function AppShell({ navItems = [], children }) {
+// Liens affichés dans la tabbar mobile fixe en bas d'écran.
+// "Profil" est toujours présent ; "Calendrier" seulement pour l'élève,
+// à adapter si d'autres rôles doivent avoir des liens spécifiques.
+function getTabbarLinks(role) {
+  const links = [{ to: "/profil", label: "Profil" }];
+
+  if (role === "eleve") {
+    links.splice(1, 0, { to: "/calendrier", label: "Calendrier" });
+  }
+
+  return links;
+}
+
+export default function AppShell({ title, navLinks = [], children }) {
+  const { role } = useAuth();
+  const tabbarLinks = getTabbarLinks(role);
+
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__logo">
-          <span className="app-header__logo-badge">F</span>
-          <span className="app-header__logo-name">Formanova</span>
+          <img src={logo} alt="Formanova" className="app-header__logo-img" />
         </div>
 
-        <nav className="app-header__nav">
-          {navItems.map((item) => (
+        <div className="app-header__center">
+          {title && <span className="app-header__title">{title}</span>}
+          {navLinks.map((link) => (
             <NavLink
-              key={item.to}
-              to={item.to}
+              key={link.to}
+              to={link.to}
               className={({ isActive }) =>
                 "app-header__nav-link" + (isActive ? " app-header__nav-link--active" : "")
               }
             >
-              {item.label}
+              {link.label}
             </NavLink>
           ))}
-        </nav>
+        </div>
 
         <NavLink to="/profil" className="app-header__avatar" aria-label="Mon profil">
           <AvatarIcon />
@@ -50,6 +64,20 @@ export default function AppShell({ navItems = [], children }) {
       <main className="app-body">{children}</main>
 
       <footer className="app-footer">Aide · Mentions légales</footer>
+
+      <nav className="mobile-tabbar">
+        {tabbarLinks.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            className={({ isActive }) =>
+              "mobile-tabbar__link" + (isActive ? " mobile-tabbar__link--active" : "")
+            }
+          >
+            {link.label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

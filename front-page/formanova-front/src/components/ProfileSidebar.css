@@ -45,3 +45,31 @@
 .profile-sidebar__edit {
   width: 100%;
 }
+
+@media (max-width: 720px) {
+  .profile-sidebar {
+    padding: 24px 20px;
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .profile-sidebar__avatar {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .profile-sidebar__info {
+    margin-bottom: 12px;
+    flex-basis: 100%;
+  }
+
+  .profile-sidebar__edit {
+    width: auto;
+    flex-basis: 100%;
+  }
+}

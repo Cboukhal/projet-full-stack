@@ -1,51 +1,32 @@
-// Adresse du backend Django, configurable via une variable d'environnement Vite.
-const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
-
-// Récupère un message d'erreur lisible renvoyé par le backend, ou un message par défaut.
-async function readErrorMessage(response, fallbackMessage) {
-  try {
-    const payload = await response.json();
-    return payload.detail || fallbackMessage;
-  } catch {
-    return fallbackMessage;
-  }
-}
+import { apiFetch } from "./client.js";
 
 // Connexion : envoie identifiant/mot de passe, reçoit un token + la fiche utilisateur.
 export async function login(identifiant, motDePasse) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+  return apiFetch("/api/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ identifiant, motDePasse }),
+    body: { identifiant, motDePasse },
+    fallbackMessage: "Impossible de se connecter au backend.",
   });
-
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, "Impossible de se connecter au backend."));
-  }
-
-  return await response.json();
 }
- 
+
 // Récupère le profil de l'utilisateur connecté à partir de son token (pas de la BDD locale).
 export async function getProfil(token) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  // Token absent/invalide ou profil introuvable : on laisse l'appelant gérer le cas "pas de profil".
-  if (response.status === 401 || response.status === 404) {
+  try {
+    return await apiFetch("/api/auth/profile", { token });
+  } catch {
+    // Token absent/invalide ou profil introuvable : on laisse l'appelant gérer le cas "pas de profil".
     return null;
   }
+}
 
-  if (!response.ok) {
-    throw new Error(await readErrorMessage(response, "Impossible de récupérer le profil."));
-  }
-
-  return await response.json();
+// Modifie la fiche de l'utilisateur connecté (nom, email, téléphone, spécialité).
+export async function updateProfil(token, data) {
+  return apiFetch("/api/auth/profile", {
+    token,
+    method: "PATCH",
+    body: data,
+    fallbackMessage: "Impossible de mettre à jour le profil.",
+  });
 }
 
 // Déconnexion : invalide le token côté serveur pour empêcher sa réutilisation.
@@ -53,14 +34,8 @@ export async function logout(token) {
   if (!token) {
     return;
   }
-
   try {
-    await fetch(`${API_BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await apiFetch("/api/auth/logout", { token, method: "POST" });
   } catch {
     // Le logout local doit réussir même si le backend est injoignable.
   }

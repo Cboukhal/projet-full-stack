@@ -1,3 +1,8 @@
+.profil-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+}
+
 .profil-content {
   background: var(--color-blue);
   padding: 40px 48px;
@@ -5,7 +10,7 @@
 }
 
 .profil-content__title {
-  margin: 0 0 6px;
+  margin: 0 0 15px;
   font-size: 1.4rem;
   font-weight: 500;
   color: var(--color-white);
@@ -23,4 +28,25 @@
   font-size: 1.05rem;
   font-weight: 500;
   color: var(--color-white);
+}
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .referente-detail-grid {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .profil-content {
+    padding: 24px 20px;
+  }
+  .profil-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-content {
+    padding: 24px 20px;
+  }
 }

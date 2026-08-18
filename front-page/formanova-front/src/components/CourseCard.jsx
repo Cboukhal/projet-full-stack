@@ -1,5 +1,5 @@
 import SectionCard from "./SectionCard";
-import "./coursecard.css";
+import "./CourseCard.css";
 
 /**
  * icon: optionnelle (les cours "à l'unité" côté élève n'en ont pas dans la maquette).
