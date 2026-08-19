@@ -21,7 +21,10 @@ function AvatarIcon() {
 // "Profil" est toujours présent ; "Calendrier" seulement pour l'élève,
 // à adapter si d'autres rôles doivent avoir des liens spécifiques.
 function getTabbarLinks(role) {
-  const links = [{ to: "/profil", label: "Profil" }];
+  const links = [
+    { to: "/accueil", label: "Accueil" },
+    { to: "/profil", label: "Profil" },
+  ];
 
   if (role === "eleve") {
     links.splice(1, 0, { to: "/calendrier", label: "Calendrier" });
@@ -37,9 +40,9 @@ export default function AppShell({ title, navLinks = [], children }) {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div className="app-header__logo">
+        <NavLink to="/accueil" className="app-header__logo" aria-label="Retour à l'accueil">
           <img src={logo} alt="Formanova" className="app-header__logo-img" />
-        </div>
+        </NavLink>
 
         <div className="app-header__center">
           {title && <span className="app-header__title">{title}</span>}

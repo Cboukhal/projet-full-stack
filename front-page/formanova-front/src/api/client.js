@@ -1,10 +1,23 @@
 // Adresse du backend Django, configurable via une variable d'environnement Vite.
 export const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
 
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 // Récupère un message d'erreur lisible renvoyé par le backend, ou un message par défaut.
 async function readErrorMessage(response, fallbackMessage) {
   try {
     const payload = await response.json();
+    // Les validateurs de mot de passe Django renvoient plusieurs conseils.
+    // On les conserve tous pour aider l'utilisateur à corriger sa saisie.
+    if (Array.isArray(payload.errors) && payload.errors.length > 0) {
+      return [payload.detail, ...payload.errors].filter(Boolean).join(" ");
+    }
     return payload.detail || fallbackMessage;
   } catch {
     return fallbackMessage;
@@ -31,7 +44,10 @@ export async function apiFetch(path, { token, method = "GET", body, fallbackMess
   });
 
   if (!response.ok) {
-    throw new Error(await readErrorMessage(response, fallbackMessage || "Une erreur est survenue."));
+    throw new ApiError(
+      await readErrorMessage(response, fallbackMessage || "Une erreur est survenue."),
+      response.status,
+    );
   }
 
   if (response.status === 204) {

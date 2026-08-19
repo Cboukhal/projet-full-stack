@@ -11,12 +11,7 @@ export async function login(identifiant, motDePasse) {
 
 // Récupère le profil de l'utilisateur connecté à partir de son token (pas de la BDD locale).
 export async function getProfil(token) {
-  try {
-    return await apiFetch("/api/auth/profile", { token });
-  } catch {
-    // Token absent/invalide ou profil introuvable : on laisse l'appelant gérer le cas "pas de profil".
-    return null;
-  }
+  return apiFetch("/api/auth/profile", { token });
 }
 
 // Modifie la fiche de l'utilisateur connecté (nom, email, téléphone, spécialité).

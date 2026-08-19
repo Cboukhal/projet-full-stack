@@ -42,8 +42,10 @@
   margin: 0;
 }
 
-.profile-sidebar__edit {
+.profile-sidebar__actions {
   width: 100%;
+  display: grid;
+  gap: 12px;
 }
 
 @media (max-width: 720px) {
@@ -68,8 +70,7 @@
     flex-basis: 100%;
   }
 
-  .profile-sidebar__edit {
-    width: auto;
+  .profile-sidebar__actions {
     flex-basis: 100%;
   }
 }

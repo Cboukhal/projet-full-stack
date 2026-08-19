@@ -32,6 +32,28 @@ class DemoUser(models.Model):
         return f"{self.nom} ({self.role})"
 
 
+class PasswordResetToken(models.Model):
+    # Le jeton reçu par e-mail n'est jamais enregistré en clair : seul son
+    # condensat SHA-256 permet de retrouver la demande lors de la validation.
+    user = models.ForeignKey(
+        DemoUser,
+        on_delete=models.CASCADE,
+        related_name="password_reset_tokens",
+    )
+    token_hash = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    # Une date, plutôt qu'un simple booléen, conserve l'instant d'utilisation
+    # tout en permettant de distinguer un jeton encore actif (valeur null).
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Réinitialisation de {self.user.identifiant}"
+
+
 class Filiere(models.Model):
     nom = models.CharField(max_length=150, unique=True)
     description = models.TextField(blank=True)

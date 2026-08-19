@@ -2,7 +2,16 @@ import json
 
 from django.test import Client, TestCase
 
-from .models import Cours, CoursPlanifie, Cursus, CursusCours, DemoUser, Filiere, InscriptionPromotion, Promotion
+from .models import (
+    Cours,
+    CoursPlanifie,
+    Cursus,
+    CursusCours,
+    DemoUser,
+    Filiere,
+    InscriptionPromotion,
+    Promotion,
+)
 
 
 class ApiSmokeTests(TestCase):
@@ -27,6 +36,44 @@ class ApiSmokeTests(TestCase):
         self.assertIn('token', payload)
         self.assertEqual(len(payload['token']), 64)
         self.assertEqual(payload['user']['role'], 'eleve')
+
+    def test_login_displays_the_drf_browsable_form(self):
+        # Un navigateur demande du HTML : DRF affiche alors le formulaire POST.
+        response = self.client.get(
+            '/api/auth/login',
+            HTTP_ACCEPT='text/html',
+        )
+
+        # La ressource reste POST-only, mais la réponse 405 contient désormais
+        # une véritable page DRF avec les deux champs du sérialiseur.
+        self.assertEqual(response.status_code, 405)
+        self.assertTrue(response['Content-Type'].startswith('text/html'))
+        self.assertContains(response, 'name="identifiant"', status_code=405)
+        self.assertContains(response, 'name="motDePasse"', status_code=405)
+
+    def test_login_accepts_the_drf_html_form(self):
+        response = self.client.post(
+            '/api/auth/login',
+            data={
+                'identifiant': 'camille.dubois',
+                'motDePasse': 'eleve123',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.json())
+
+    def test_login_keeps_generic_errors_for_invalid_json(self):
+        for invalid_body in ('{', '[]', 'null'):
+            with self.subTest(body=invalid_body):
+                response = self.client.post(
+                    '/api/auth/login',
+                    data=invalid_body,
+                    content_type='application/json',
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json(), {'detail': 'Requête invalide.'})
 
     def test_profile_requires_authentication(self):
         # Sans token, le profil n'est pas accessible.

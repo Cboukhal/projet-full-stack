@@ -1,18 +1,20 @@
 from django.conf import settings
 from django.http import HttpResponse
+from django.utils.cache import patch_vary_headers
 
 
-# On lit d'abord une éventuelle configuration explicite de CORS.
+# La liste CORS est indépendante de CSRF. Le repli conserve la compatibilité
+# avec une ancienne configuration qui ne définirait pas encore ce réglage.
 def _allowed_origins():
-    if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and settings.CORS_ALLOWED_ORIGINS:
-        return set(settings.CORS_ALLOWED_ORIGINS)
+    configured_origins = getattr(settings, 'CORS_ALLOWED_ORIGINS', None)
+    if configured_origins is None:
+        configured_origins = getattr(settings, 'CSRF_TRUSTED_ORIGINS', [])
 
-    # Sinon, on réutilise les origines CSRF autorisées.
-    trusted_origins = getattr(settings, 'CSRF_TRUSTED_ORIGINS', [])
-    cleaned = set()
-    for origin in trusted_origins:
-        cleaned.add(origin.rstrip('/'))
-    return cleaned
+    return {
+        origin.strip().rstrip('/')
+        for origin in configured_origins
+        if isinstance(origin, str) and origin.strip()
+    }
 
 
 class SimpleCORSMiddleware:
@@ -30,6 +32,8 @@ class SimpleCORSMiddleware:
             self._set_cors_headers(response, origin)
             response['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, DELETE, OPTIONS'
             response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            # Le navigateur peut mémoriser ce préflight pendant dix minutes.
+            response['Access-Control-Max-Age'] = '600'
             return response
 
         response = self.get_response(request)
@@ -44,4 +48,5 @@ class SimpleCORSMiddleware:
         # En-têtes CORS minimaux pour le frontend Vite.
         response['Access-Control-Allow-Origin'] = origin
         response['Access-Control-Allow-Credentials'] = 'true'
-        response['Vary'] = 'Origin'
+        # Ajoute Origin sans écraser un éventuel Vary déjà posé par Django.
+        patch_vary_headers(response, ('Origin',))

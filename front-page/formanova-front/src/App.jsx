@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
+import { getRoleHome } from "./authRoutes";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
+import MotDePasseOublie from "./pages/MotDePasseOublie";
+import ReinitialiserMotDePasse from "./pages/ReinitialiserMotDePasse";
+import Accueil from "./pages/Accueil";
 import Profil from "./pages/Profil";
 import Calendrier from "./pages/Calendrier";
 import CourseDetail from "./pages/CourseDetail";
@@ -17,12 +21,39 @@ import PromotionDetail from "./pages/referente/PromotionDetail";
 import PlanifierCours from "./pages/referente/PlanifierCours";
 import PlanifierPromotion from "./pages/referente/PlanifierPromotion";
 
+function SessionEntry({ showLogin = false }) {
+  const { isAuthenticated, isLoading, role } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to={getRoleHome(role)} replace />;
+  }
+
+  return showLogin ? <Login /> : <Navigate to="/login" replace />;
+}
+
 export default function App() {
   return (
-    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<SessionEntry />} />
+          <Route path="/login" element={<SessionEntry showLogin />} />
+          {/* Ces deux pages restent accessibles sans session : le lien reçu
+              par e-mail sert lui-même de preuve temporaire. */}
+          <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+          <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
+
+          <Route
+            path="/accueil"
+            element={
+              <ProtectedRoute>
+                <Accueil />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/profil"
@@ -100,8 +131,7 @@ export default function App() {
 
           <Route 
           path="*" 
-          element={<Navigate to="/login" replace />
-          } />
+          element={<SessionEntry />} />
 
           <Route
           path="/espace-referente/filieres/:filiereId"
@@ -141,6 +171,5 @@ export default function App() {
           
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
   );
 }

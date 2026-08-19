@@ -28,6 +28,22 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
+# CORS et CSRF répondent à deux besoins différents. Le frontend React utilise
+# CORS pour appeler l'API avec son en-tête Authorization ; cette liste est donc
+# configurable indépendamment des origines CSRF.
+CORS_ALLOWED_ORIGINS = [
+    origin.strip().rstrip('/')
+    for origin in os.getenv(
+        'DJANGO_CORS_ALLOWED_ORIGINS',
+        (
+            'http://localhost:5173,http://localhost:5174,'
+            'http://127.0.0.1:5173,http://127.0.0.1:5174,'
+            'http://frontend:5173'
+        ),
+    ).split(',')
+    if origin.strip()
+]
+
 # Apps activées par Django pour ce projet.
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,6 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Django REST Framework est disponible pour les futures vues API,
+    # sérialiseurs, permissions et ViewSets.
+    'rest_framework',
     'api',
 ]
 
@@ -95,6 +114,10 @@ else:
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        # DemoUser n'utilise pas les noms de champs du User Django standard.
+        'OPTIONS': {
+            'user_attributes': ('identifiant', 'nom', 'email'),
+        },
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -116,5 +139,23 @@ USE_TZ = True
 # Les fichiers statiques ne sont pas encore servis par un serveur dédié.
 STATIC_URL = 'static/'
 
-# Les emails sont affichés dans la console pour le développement.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# En Docker, les variables du compose dirigent les emails vers MailHog.
+# Hors Docker, le backend console reste le comportement de développement par défaut.
+EMAIL_BACKEND = os.getenv(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend',
+)
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '1025'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', '0').lower() in {'1', 'true', 'yes'}
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', '0').lower() in {'1', 'true', 'yes'}
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '10'))
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@formanova.local')
+
+# URL publique utilisée dans les e-mails et durée de validité d'un lien.
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+PASSWORD_RESET_TOKEN_TTL_SECONDS = int(
+    os.getenv('PASSWORD_RESET_TOKEN_TTL_SECONDS', '3600'),
+)

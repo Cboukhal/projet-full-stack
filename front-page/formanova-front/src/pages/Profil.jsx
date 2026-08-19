@@ -17,7 +17,7 @@ const ROLE_LABELS = {
 };
 
 export default function Profil() {
-  const { user, role, token, updateUser } = useAuth();
+  const { user, role, token, logout, updateUser } = useAuth();
   // On affiche d'abord la fiche déjà connue (reçue au login), puis on la rafraîchit depuis le backend.
   const [profile, setProfile] = useState(user);
   const [isEditing, setIsEditing] = useState(false);
@@ -67,6 +67,7 @@ export default function Profil() {
           role={ROLE_LABELS[role] ?? role}
           infoLines={infoLines}
           onEdit={() => setIsEditing(true)}
+          onLogout={logout}
         />
 
         <section className="profil-content">

@@ -19,13 +19,21 @@ from .academics_views import (
     promotion_planning_view,
     promotions_list_view,
 )
-from .views import login_view, logout_view, profile_view
+from .views import (
+    forgot_password_view,
+    LoginAPIView,
+    logout_view,
+    profile_view,
+    reset_password_view,
+)
 
 # Endpoints utilisés par le frontend React.
 urlpatterns = [
-    path('auth/login', login_view, name='login'),
+    path('auth/login', LoginAPIView.as_view(), name='login'),
     path('auth/logout', logout_view, name='logout'),
     path('auth/profile', profile_view, name='profile'),
+    path('auth/forgot-password', forgot_password_view, name='forgot-password'),
+    path('auth/reset-password', reset_password_view, name='reset-password'),
 
     path('filieres', filieres_view, name='filieres'),
     path('filieres/<int:filiere_id>', filiere_detail_view, name='filiere-detail'),
