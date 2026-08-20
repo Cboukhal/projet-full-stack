@@ -1,6 +1,10 @@
+/**
+ * Client des routes d'authentification et de gestion du profil courant.
+ * Toutes les requêtes passent par `apiFetch` afin de partager la même gestion des erreurs.
+ */
 import { apiFetch } from "./client.js";
 
-// Connexion : envoie identifiant/mot de passe, reçoit un token + la fiche utilisateur.
+/** Connecte un utilisateur et renvoie son token accompagné de sa fiche. */
 export async function login(identifiant, motDePasse) {
   return apiFetch("/api/auth/login", {
     method: "POST",
@@ -9,17 +13,12 @@ export async function login(identifiant, motDePasse) {
   });
 }
 
-// Récupère le profil de l'utilisateur connecté à partir de son token (pas de la BDD locale).
+/** Récupère auprès du backend le profil associé au token courant. */
 export async function getProfil(token) {
-  try {
-    return await apiFetch("/api/auth/profile", { token });
-  } catch {
-    // Token absent/invalide ou profil introuvable : on laisse l'appelant gérer le cas "pas de profil".
-    return null;
-  }
+  return apiFetch("/api/auth/profile", { token });
 }
 
-// Modifie la fiche de l'utilisateur connecté (nom, email, téléphone, spécialité).
+/** Met à jour les champs modifiables du profil authentifié. */
 export async function updateProfil(token, data) {
   return apiFetch("/api/auth/profile", {
     token,
@@ -29,7 +28,10 @@ export async function updateProfil(token, data) {
   });
 }
 
-// Déconnexion : invalide le token côté serveur pour empêcher sa réutilisation.
+/**
+ * Invalide le token côté serveur.
+ * L'échec réseau est volontairement absorbé : la session locale doit toujours pouvoir être fermée.
+ */
 export async function logout(token) {
   if (!token) {
     return;

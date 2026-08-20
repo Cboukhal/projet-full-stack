@@ -1,3 +1,4 @@
+/** Fiche détaillée d'une occurrence de cours visible dans le planning élève. */
 import { useEffect, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -6,10 +7,12 @@ import PersonIcon from "../components/PersonIcon";
 import { getMonPlanningDetail } from "../api/planningApi";
 import "./CourseDetail.css";
 
+/** Formate une date API selon les conventions françaises. */
 function formatDate(value) {
   return value ? new Date(value).toLocaleDateString("fr-FR") : null;
 }
 
+/** Extrait l'heure et les minutes d'une date API. */
 function formatTime(value) {
   return value ? new Date(value).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : null;
 }
@@ -20,6 +23,7 @@ export default function CourseDetail() {
   const [course, setCourse] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
+  // L'API vérifie que le cours demandé appartient bien au planning de l'élève.
   useEffect(() => {
     getMonPlanningDetail(token, courseId)
       .then(setCourse)
@@ -42,6 +46,7 @@ export default function CourseDetail() {
     : [];
   const periode = [formatDate(course.dateDebut), formatDate(course.dateFin)].filter(Boolean).join(" → ");
   const horaires = [formatTime(course.dateDebut), formatTime(course.dateFin)].filter(Boolean).join(" - ");
+  const contexte = course.promotionNom || "Cours à l’unité";
 
   return (
     <AppShell title="Calendrier">
@@ -53,6 +58,7 @@ export default function CourseDetail() {
           / {course.titre}
         </p>
 
+        {/* Le contenu pédagogique et les informations pratiques restent séparés. */}
         <div className="course-detail__grid">
           <section className="course-detail__main">
             <div className="course-detail__badges">
@@ -62,7 +68,7 @@ export default function CourseDetail() {
 
             <h1 className="course-detail__title">{course.titre}</h1>
             <p className="course-detail__meta">
-              {periode || "Dates à confirmer"} · {course.promotionNom}
+              {periode || "Dates à confirmer"} · {contexte}
             </p>
 
             <h2 className="course-detail__heading">Description</h2>
@@ -88,7 +94,7 @@ export default function CourseDetail() {
               <li>{periode || "Période à confirmer"}</li>
               <li>{horaires || "Horaires à confirmer"}</li>
               <li>{course.salle || "Salle à confirmer"}</li>
-              <li>Promotion : {course.promotionNom}</li>
+              <li>{course.promotionNom ? `Promotion : ${course.promotionNom}` : "Cours à l’unité"}</li>
             </ul>
 
             {course.formateur && (

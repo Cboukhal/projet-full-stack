@@ -1,3 +1,4 @@
+/** Liste des inscriptions existantes, avec le formulaire de nouvelle inscription en aparté. */
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ReferenteLayout from "../../components/ReferenteLayout";

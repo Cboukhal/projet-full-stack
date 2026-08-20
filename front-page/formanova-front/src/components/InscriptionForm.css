@@ -66,6 +66,22 @@
   margin: -8px 0 16px;
 }
 
+.inscription-form__field-message {
+  margin: 7px 0 0;
+  color: var(--color-text-gray);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.inscription-form__field-message[role="alert"] {
+  color: var(--color-danger);
+}
+
+.inscription-form select.field__input:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .inscription-form__note {
   background: var(--color-icon-bg);
   border-radius: var(--radius-md);

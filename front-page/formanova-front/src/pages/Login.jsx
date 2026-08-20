@@ -1,19 +1,15 @@
+/** Formulaire public de connexion et redirection vers l'espace du rôle reçu. */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthLayout from "../components/AuthLayout";
 import TextField from "../components/TextField";
 import Button from "../components/Button";
+import { getRoleHome } from "../authRoutes";
 import "./Login.css";
 
-const ROLE_HOME = {
-  eleve: "/profil",
-  formateur: "/profil",
-  referente: "/espace-referente",
-  administrateur: "/profil",
-};
-
 export default function Login() {
+  // Le formulaire, son erreur et l'indicateur d'envoi évoluent indépendamment.
   const [form, setForm] = useState({ identifiant: "", motDePasse: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,11 +17,13 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  /** Met à jour le champ portant le même nom que la propriété du formulaire. */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  /** Authentifie l'utilisateur puis remplace la page de connexion dans l'historique. */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -33,7 +31,7 @@ export default function Login() {
 
     try {
       const { user } = await login(form.identifiant, form.motDePasse);
-      navigate(ROLE_HOME[user.role] ?? "/profil");
+      navigate(getRoleHome(user.role), { replace: true });
     } catch (err) {
       setError(err.message || "Une erreur est survenue. Réessayez.");
     } finally {
@@ -77,13 +75,6 @@ export default function Login() {
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Connexion..." : "Se connecter"}
         </Button>
-
-        <p className="login-signup">
-          Vous n'avez pas de compte ?{" "}
-          <Link to="/inscription" className="login-signup__link">
-            S'inscrire maintenant
-          </Link>
-        </p>
       </form>
     </AuthLayout>
   );

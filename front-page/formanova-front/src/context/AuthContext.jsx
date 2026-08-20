@@ -1,72 +1,12 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { login as loginApi, logout as logoutApi } from "../api/authApi";
+/** Contexte React exposant la session courante à l'ensemble de l'application. */
+import { createContext, useContext } from "react";
 
-// Contexte React qui partage la session (token + utilisateur) dans toute l'app.
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
-// Clé utilisée pour persister la session dans le localStorage du navigateur.
-const STORAGE_KEY = "formanova_auth";
-
-export function AuthProvider({ children }) {
-  const [auth, setAuth] = useState(null); // { token, user } | null
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Recharge la session depuis le stockage local au démarrage de l'app.
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setAuth(JSON.parse(saved));
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Connexion : appelle le backend puis mémorise la session en état et en localStorage.
-  async function login(identifiant, motDePasse) {
-    const result = await loginApi(identifiant, motDePasse);
-    setAuth(result);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
-    return result;
-  }
-
-  // Déconnexion : invalide le token côté serveur puis nettoie la session locale.
-  function logout() {
-    logoutApi(auth?.token);
-    setAuth(null);
-    localStorage.removeItem(STORAGE_KEY);
-  }
-
-  // Fusionne des champs modifiés dans l'utilisateur courant (après édition du profil)
-  // et les repersiste, pour que le reste de l'app (nom affiché, etc.) reste à jour.
-  function updateUser(patch) {
-    setAuth((prev) => {
-      if (!prev) {
-        return prev;
-      }
-      const next = { ...prev, user: { ...prev.user, ...patch } };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-  }
-
-  // Valeur exposée aux composants via useAuth().
-  const value = {
-    token: auth?.token ?? null,
-    user: auth?.user ?? null,
-    role: auth?.user?.role ?? null,
-    isAuthenticated: Boolean(auth?.token),
-    isLoading,
-    login,
-    logout,
-    updateUser,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
+/**
+ * Retourne l'API d'authentification fournie par `AuthProvider`.
+ * L'erreur explicite évite qu'un composant consomme silencieusement un contexte absent.
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

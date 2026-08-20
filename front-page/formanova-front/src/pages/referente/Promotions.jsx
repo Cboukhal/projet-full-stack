@@ -1,3 +1,4 @@
+/** Tableau de bord des promotions : statistiques globales et liste avec accès au détail. */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -8,6 +9,7 @@ import { listCursus } from "../../api/cursusApi";
 import "./Promotions.css";
 
 function BookmarkIcon() {
+  // Icône décorative purement statique, sans props ni état.
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
       <path

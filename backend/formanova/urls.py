@@ -1,3 +1,5 @@
+"""Routes racines de FormaNova vers l’administration et l’API métier."""
+
 from django.contrib import admin
 from django.urls import include, path
 

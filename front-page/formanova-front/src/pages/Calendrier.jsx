@@ -1,3 +1,4 @@
+/** Calendrier hebdomadaire en lecture seule des cours de l'élève connecté. */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -17,6 +18,7 @@ function startOfWeek(date) {
   return d;
 }
 
+/** Compare deux dates civiles sans tenir compte de leur heure. */
 function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
@@ -25,8 +27,10 @@ export default function Calendrier() {
   const navigate = useNavigate();
   const { token } = useAuth();
   const [courses, setCourses] = useState([]);
+  // Dictionnaire id -> booléen utilisé par les cases à cocher de la légende.
   const [selected, setSelected] = useState({});
 
+  // Charge une seule fois le planning associé au jeton courant et coche tous les cours.
   useEffect(() => {
     getMonPlanning(token)
       .then((data) => {
@@ -39,6 +43,7 @@ export default function Calendrier() {
   }, [token]);
 
   const today = new Date();
+  // La vue reste volontairement ancrée sur la semaine présente pendant ce montage.
   const monday = useMemo(() => startOfWeek(today), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const days = useMemo(
@@ -75,6 +80,7 @@ export default function Calendrier() {
   return (
     <AppShell title="Calendrier">
       <div className="calendar-page">
+        {/* En-tête et filtres locaux : ils ne modifient pas le planning côté serveur. */}
         <div className="calendar-page__header">
           <div>
             <h2 className="calendar-page__title">Mon calendrier</h2>
@@ -95,6 +101,7 @@ export default function Calendrier() {
           </div>
         </div>
 
+        {/* Grille fixe sur cinq colonnes, avec une superposition des événements. */}
         <div className="calendar-card">
           <div className="calendar-grid">
             {days.map((day, i) => (
@@ -115,7 +122,7 @@ export default function Calendrier() {
               <button
                 key={course.id}
                 type="button"
-                className="calendar-event calendar-event--promotion"
+                className={`calendar-event calendar-event--${course.mode === "unite" ? "unite" : "promotion"}`}
                 style={{ gridColumn: `${course.col + 1} / span 1` }}
                 onClick={() => navigate(`/calendrier/${course.id}`)}
               >

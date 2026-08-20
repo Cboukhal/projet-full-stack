@@ -1,3 +1,4 @@
+/** Fiche détaillée d'une promotion : informations générales et planning des cours. */
 import { useEffect, useState } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

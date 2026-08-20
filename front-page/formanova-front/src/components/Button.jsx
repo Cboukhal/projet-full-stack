@@ -2,7 +2,7 @@ import "./Button.css";
 
 /**
  * Bouton générique de l'app.
- * variant: "primary" | "text"
+ * variant: "primary" | "danger" | "text"
  */
 export default function Button({ children, variant = "primary", className = "", ...rest }) {
   return (

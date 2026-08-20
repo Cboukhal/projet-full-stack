@@ -1,3 +1,4 @@
+/** Liste des cours de l'espace référente, avec les cursus associés en récapitulatif. */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -5,6 +6,7 @@ import ReferenteLayout from "../../components/ReferenteLayout";
 import ListPageHeader from "../../components/ListPageHeader";
 import DataTable from "../../components/DataTable";
 import { listCours } from "../../api/coursApi";
+import { getCoursPath, NEW_COURS_PATH } from "../../coursRoutes";
 
 const COLUMNS = [
   { key: "nom", label: "Nom", width: "2.2fr" },
@@ -47,13 +49,13 @@ export default function Cours() {
         searchValue={search}
         onSearchChange={setSearch}
         actionLabel="+ Nouveau cours"
-        onAction={() => navigate("/espace-referente/cours/nouveau")}
+        onAction={() => navigate(NEW_COURS_PATH)}
       />
 
       <DataTable
         columns={COLUMNS}
         rows={rows}
-        onRowClick={(row) => navigate(`/espace-referente/cours/${row.id}`)}
+        onRowClick={(row) => navigate(getCoursPath(row))}
       />
     </ReferenteLayout>
   );

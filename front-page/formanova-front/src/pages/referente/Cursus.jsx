@@ -1,3 +1,4 @@
+/** Liste des cursus de l'espace référente, avec recherche et accès à la création. */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

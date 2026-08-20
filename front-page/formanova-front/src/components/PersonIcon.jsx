@@ -1,3 +1,4 @@
+/** Icône silhouette utilisée pour représenter un profil utilisateur sans avatar. */
 export default function PersonIcon({ size = 40, color = "var(--color-blue)" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Point d’entrée des commandes d’administration Django de FormaNova."""
 import os
 import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """Configure Django puis exécuter la commande reçue en argument."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'formanova.settings')
     try:
         from django.core.management import execute_from_command_line

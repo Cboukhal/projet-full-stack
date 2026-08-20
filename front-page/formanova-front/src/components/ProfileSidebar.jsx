@@ -19,7 +19,7 @@ function PersonIcon() {
  * infoLines: lignes de texte libres sous le nom (email, téléphone, spécialité...).
  * Le contenu varie selon le rôle, mais la structure visuelle reste la même partout.
  */
-export default function ProfileSidebar({ name, role, infoLines = [], onEdit }) {
+export default function ProfileSidebar({ name, role, infoLines = [], onEdit, onLogout }) {
   return (
     <aside className="profile-sidebar">
       <div className="profile-sidebar__avatar">
@@ -34,9 +34,14 @@ export default function ProfileSidebar({ name, role, infoLines = [], onEdit }) {
         ))}
       </div>
 
-      <Button variant="primary" onClick={onEdit} className="profile-sidebar__edit">
-        Modifier votre profil
-      </Button>
+      <div className="profile-sidebar__actions">
+        <Button variant="primary" type="button" onClick={onEdit}>
+          Modifier votre profil
+        </Button>
+        <Button variant="danger" type="button" onClick={onLogout}>
+          Se déconnecter
+        </Button>
+      </div>
     </aside>
   );
 }
