@@ -1,4 +1,4 @@
-/** Formulaire de création et de modification d'une filière. */
+/** Formulaire de création et de modification d'une salle du référentiel. */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -8,57 +8,58 @@ import TextField from "../../components/TextField";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import {
-  getFiliere,
-  createFiliere,
-  updateFiliere,
-  deleteFiliere,
-} from "../../api/filieresApi";
+  getSalle,
+  createSalle,
+  updateSalle,
+  deleteSalle,
+} from "../../api/sallesApi";
 import "./ReferenteForms.css";
 
-export default function FiliereForm() {
-  const { filiereId } = useParams();
+export default function SalleForm() {
+  const { salleId } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const isCreate = filiereId === "nouveau";
+  const isCreate = salleId === "nouveau";
 
   const [existing, setExisting] = useState(null);
-  const [nom, setNom] = useState("");
-  const [description, setDescription] = useState("");
-  const [statut, setStatut] = useState("Actif");
+  const [numeroBatiment, setNumeroBatiment] = useState("");
+  const [numeroEtage, setNumeroEtage] = useState("");
+  const [numeroSalle, setNumeroSalle] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const hasDependencies = Boolean(
-    existing && (existing.nbCursus > 0 || existing.nbEleves > 0),
-  );
-
   useEffect(() => {
     if (isCreate) {
       return;
     }
-    getFiliere(token, filiereId)
+    getSalle(token, salleId)
       .then((data) => {
         setExisting(data);
-        setNom(data.nom);
-        setDescription(data.description);
-        setStatut(data.statut);
+        setNumeroBatiment(data.numeroBatiment);
+        setNumeroEtage(String(data.numeroEtage));
+        setNumeroSalle(String(data.numeroSalle));
       })
-      .catch(() => setError("Filière introuvable."));
-  }, [isCreate, filiereId, token]);
+      .catch(() => setError("Salle introuvable."));
+  }, [isCreate, salleId, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
     try {
+      const payload = {
+        numeroBatiment,
+        numeroEtage: Number(numeroEtage),
+        numeroSalle: Number(numeroSalle),
+      };
       if (isCreate) {
-        await createFiliere(token, { nom, description, statut });
+        await createSalle(token, payload);
       } else {
-        await updateFiliere(token, filiereId, { nom, description, statut });
+        await updateSalle(token, salleId, payload);
       }
-      navigate("/espace-referente/filieres");
+      navigate("/espace-referente/salles");
     } catch (err) {
       setError(err.message || "Une erreur est survenue.");
     } finally {
@@ -67,10 +68,9 @@ export default function FiliereForm() {
   };
 
   const openDeleteModal = () => {
-    if (!existing || hasDependencies || isSubmitting || isDeleting) {
+    if (!existing || isSubmitting || isDeleting) {
       return;
     }
-
     setError("");
     setIsDeleteModalOpen(true);
   };
@@ -79,24 +79,21 @@ export default function FiliereForm() {
     if (isDeleting) {
       return;
     }
-
     setIsDeleteModalOpen(false);
     setError("");
   };
 
   const handleDelete = async () => {
-    if (!existing || hasDependencies || isSubmitting || isDeleting) {
+    if (!existing || isDeleting) {
       return;
     }
-
     setError("");
     setIsDeleting(true);
     try {
-      await deleteFiliere(token, filiereId);
-      navigate("/espace-referente/filieres", { replace: true });
+      await deleteSalle(token, salleId);
+      navigate("/espace-referente/salles", { replace: true });
     } catch (err) {
-      // Le backend revérifie les dépendances pour couvrir une modification concurrente.
-      setError(err.message || "Impossible de supprimer la filière.");
+      setError(err.message || "Impossible de supprimer la salle.");
     } finally {
       setIsDeleting(false);
     }
@@ -105,10 +102,10 @@ export default function FiliereForm() {
   return (
     <ReferenteLayout>
       <p className="referente-breadcrumb">
-        <Link to="/espace-referente/filieres" className="referente-breadcrumb__link">
-          Filières
+        <Link to="/espace-referente/salles" className="referente-breadcrumb__link">
+          Salles
         </Link>{" "}
-        /{isCreate ? "Créer" : existing ? ` ${existing.nom} / Modifier` : "Introuvable"}
+        /{isCreate ? "Créer" : existing ? ` Bâtiment ${existing.numeroBatiment} · Étage ${existing.numeroEtage} · Salle ${existing.numeroSalle} / Modifier` : "Introuvable"}
       </p>
 
       {error && (
@@ -118,49 +115,39 @@ export default function FiliereForm() {
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        <FormCard title="Informations générales">
-          <TextField
-            name="nom"
-            placeholder="Nom de la filière — Développement"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-          />
-
-          <div className="form-field">
-            <label className="form-field__label" htmlFor="description">
-              Description
-            </label>
-            <textarea
-              id="description"
-              className="form-textarea"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+        <FormCard title="Localisation de la salle">
+          <div className="form-field-row">
+            <TextField
+              label="Numéro de bâtiment"
+              name="numeroBatiment"
+              type="text"
+              maxLength={10}
+              placeholder="Ex. A"
+              value={numeroBatiment}
+              onChange={(e) => setNumeroBatiment(e.target.value.toUpperCase())}
+              required
+            />
+            <TextField
+              label="Numéro d'étage"
+              name="numeroEtage"
+              type="number"
+              min="0"
+              placeholder="Ex. 2"
+              value={numeroEtage}
+              onChange={(e) => setNumeroEtage(e.target.value)}
+              required
+            />
+            <TextField
+              label="Numéro de salle"
+              name="numeroSalle"
+              type="number"
+              min="0"
+              placeholder="Ex. 12"
+              value={numeroSalle}
+              onChange={(e) => setNumeroSalle(e.target.value)}
+              required
             />
           </div>
-
-          <TextField
-            name="statut"
-            placeholder="Statut — Actif"
-            value={statut}
-            onChange={(e) => setStatut(e.target.value)}
-          />
-
-          {existing && existing.cursusRattaches.length > 0 && (
-            <>
-              <h3 className="referente-form-subheading">Cursus rattachés</h3>
-              <div className="tag-list">
-                {existing.cursusRattaches.map((c) => (
-                  <span key={c} className="tag">
-                    {c}
-                  </span>
-                ))}
-              </div>
-              <p className="referente-form-note">
-                {existing.cursusRattaches.length} cursus utilisent cette filière · non modifiable
-                ici
-              </p>
-            </>
-          )}
 
           <div className="referente-form-actions">
             <Button
@@ -177,28 +164,21 @@ export default function FiliereForm() {
                 variant="danger"
                 className="referente-form-delete"
                 onClick={openDeleteModal}
-                disabled={hasDependencies || isSubmitting || isDeleting}
+                disabled={isSubmitting || isDeleting}
               >
-                Supprimer la filière
+                Supprimer la salle
               </Button>
             )}
           </div>
-
-          {!isCreate && existing && hasDependencies && (
-            <p className="referente-form-note">
-              Suppression impossible : retirez d’abord tous les cursus et élèves rattachés à cette
-              filière.
-            </p>
-          )}
         </FormCard>
       </form>
 
       <Modal
         open={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        title="Supprimer cette filière ?"
+        title="Supprimer cette salle ?"
         role="alertdialog"
-        describedBy="delete-filiere-description"
+        describedBy="delete-salle-description"
         closeDisabled={isDeleting}
         className="delete-confirmation-modal"
       >
@@ -209,13 +189,13 @@ export default function FiliereForm() {
             </svg>
           </div>
 
-          <p id="delete-filiere-description" className="delete-confirmation__description">
-            La filière <strong>« {existing?.nom} »</strong> sera supprimée définitivement.
+          <p id="delete-salle-description" className="delete-confirmation__description">
+            La salle <strong>« Bâtiment {existing?.numeroBatiment} · Étage {existing?.numeroEtage} · Salle {existing?.numeroSalle} »</strong> sera supprimée définitivement.
           </p>
 
           <div className="delete-confirmation__warning">
             <strong>Cette action est irréversible.</strong>
-            <span>Vous ne pourrez pas récupérer cette filière après sa suppression.</span>
+            <span>Vous ne pourrez pas récupérer cette salle après sa suppression.</span>
           </div>
 
           {error && (

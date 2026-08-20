@@ -1,6 +1,4 @@
-"""
-Django settings for formanova project.
-"""
+"""Réglages Django de FormaNova, adaptés au local comme à Docker."""
 import os
 from pathlib import Path
 
@@ -72,6 +70,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'formanova.urls'
 
+# Le moteur de gabarits reste requis par l’administration et l’interface DRF.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

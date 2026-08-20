@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: "/espace-referente/cursus", label: "Cursus" },
   { to: "/espace-referente/cours", label: "Cours" },
   { to: "/espace-referente/promotions", label: "Promotions" },
+  { to: "/espace-referente/salles", label: "Salles" },
   { to: "/espace-referente/inscriptions", label: "Inscriptions" },
 ];
 

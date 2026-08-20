@@ -1,3 +1,5 @@
+"""Outils d’authentification par jeton et de contrôle des rôles métier."""
+
 import secrets
 from functools import wraps
 
@@ -7,12 +9,15 @@ from .models import DemoUser
 
 
 def make_token():
-    # Jeton aléatoire non devinable, propre à chaque connexion.
+    """Créer un jeton de session aléatoire propre à une connexion."""
+
+    # token_hex produit 64 caractères à partir de 32 octets aléatoires.
     return secrets.token_hex(32)
 
 
 def _get_bearer_token(request):
-    # Extrait le jeton de l'en-tête "Authorization: Bearer <token>".
+    """Extraire le jeton de l’en-tête ``Authorization`` s’il est bien formé."""
+
     header = request.headers.get('Authorization', '')
     if not header.startswith('Bearer '):
         return None
@@ -20,10 +25,12 @@ def _get_bearer_token(request):
 
 
 def require_token_auth(view_func):
-    # Décorateur : vérifie le token et attache l'utilisateur correspondant à la requête.
-    # Bloque l'accès (401) si le token est absent ou ne correspond à aucun utilisateur connecté.
+    """Exiger un jeton valide et attacher son utilisateur à la requête."""
+
     @wraps(view_func)
     def wrapped(request, *args, **kwargs):
+        """Autoriser l’appel de la vue seulement pour une session active."""
+
         token = _get_bearer_token(request)
         user = DemoUser.objects.filter(token=token).first() if token else None
         if not user:
@@ -35,11 +42,16 @@ def require_token_auth(view_func):
 
 
 def require_role(*roles):
-    # Décorateur à empiler après @require_token_auth : bloque (403) si le rôle de
-    # l'utilisateur connecté ne fait pas partie de ceux autorisés pour cette route.
+    """Construire un décorateur limitant une vue aux rôles indiqués."""
+
+    # Ce décorateur s’empile après require_token_auth, qui fournit demo_user.
     def decorator(view_func):
+        """Envelopper une vue avec le contrôle de rôle demandé."""
+
         @wraps(view_func)
         def wrapped(request, *args, **kwargs):
+            """Refuser la vue lorsque le rôle courant n’est pas autorisé."""
+
             if request.demo_user.role not in roles:
                 return JsonResponse({'detail': "Accès réservé à un autre rôle."}, status=403)
             return view_func(request, *args, **kwargs)

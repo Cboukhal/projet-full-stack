@@ -1,6 +1,12 @@
+/**
+ * Socle HTTP commun à tous les clients d'API du frontend.
+ * Il centralise l'URL du backend, l'authentification, la sérialisation JSON et les erreurs métier.
+ */
+
 // Adresse du backend Django, configurable via une variable d'environnement Vite.
 export const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "http://localhost:8000").replace(/\/$/, "");
 
+/** Erreur applicative enrichie du statut HTTP renvoyé par le backend. */
 export class ApiError extends Error {
   constructor(message, status) {
     super(message);
@@ -9,7 +15,7 @@ export class ApiError extends Error {
   }
 }
 
-// Récupère un message d'erreur lisible renvoyé par le backend, ou un message par défaut.
+/** Extrait un message utilisateur du JSON d'erreur, avec repli si la réponse n'est pas lisible. */
 async function readErrorMessage(response, fallbackMessage) {
   try {
     const payload = await response.json();
@@ -25,8 +31,9 @@ async function readErrorMessage(response, fallbackMessage) {
 }
 
 /**
- * Appelle l'API backend en ajoutant le token d'authentification et en gérant les erreurs.
- * method: GET|POST|PATCH|DELETE. body: objet JS sérialisé automatiquement.
+ * Appelle une route du backend et renvoie son contenu JSON.
+ * Le corps est sérialisé automatiquement, le token devient un en-tête Bearer et les réponses
+ * non réussies sont converties en `ApiError`. Une réponse 204 produit explicitement `null`.
  */
 export async function apiFetch(path, { token, method = "GET", body, fallbackMessage } = {}) {
   const headers = {};

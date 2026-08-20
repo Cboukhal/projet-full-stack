@@ -1,3 +1,4 @@
+/** Profil commun dont le contenu central varie selon le rôle authentifié. */
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getProfil } from "../api/authApi";
@@ -22,6 +23,7 @@ export default function Profil() {
   const [profile, setProfile] = useState(user);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Synchronise les informations de session avec leur version la plus récente côté serveur.
   useEffect(() => {
     let isMounted = true;
 
@@ -57,6 +59,7 @@ export default function Profil() {
     return lines;
   }, [profile]);
 
+  // Seul l'élève dispose ici d'un raccourci métier supplémentaire.
   const navLinks = role === "eleve" ? [{ to: "/calendrier", label: "Mon calendrier" }] : [];
 
   return (
@@ -70,6 +73,7 @@ export default function Profil() {
           onLogout={logout}
         />
 
+        {/* Chaque rôle fournit son propre panneau sans dupliquer la structure du profil. */}
         <section className="profil-content">
           {role === "formateur" && <FormateurContent />}
           {role === "eleve" && <EleveContent />}
@@ -77,6 +81,7 @@ export default function Profil() {
         </section>
       </div>
 
+      {/* La modale n'est montée qu'en mode édition afin de réinitialiser son état à la fermeture. */}
       {isEditing && (
         <EditProfileModal
           profile={profile}

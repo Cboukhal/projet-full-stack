@@ -1,3 +1,4 @@
+/** Client des deux étapes publiques de réinitialisation du mot de passe. */
 import { apiFetch } from "./client.js";
 
 /**

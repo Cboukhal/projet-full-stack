@@ -1,3 +1,4 @@
+/** Première étape publique du parcours de récupération de mot de passe. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
@@ -7,11 +8,13 @@ import { requestPasswordReset } from "../api/passwordResetApi";
 import "./PasswordReset.css";
 
 export default function MotDePasseOublie() {
+  // Les messages sont exclusifs dans le parcours normal : une réussite masque le formulaire.
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /** Valide sommairement l'adresse avant de demander l'envoi du lien au backend. */
   const handleSubmit = async (event) => {
     event.preventDefault();
 

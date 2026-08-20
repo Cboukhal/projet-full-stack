@@ -1,9 +1,12 @@
+"""Insère les données de démonstration (filière, cursus, cours, promotion) au premier démarrage."""
+
 from datetime import date, datetime, timezone
 
 from django.db import migrations
 
 
 def seed_academics(apps, schema_editor):
+    # apps.get_model récupère la version historique du modèle au moment de cette migration.
     Filiere = apps.get_model('api', 'Filiere')
     Cursus = apps.get_model('api', 'Cursus')
     Cours = apps.get_model('api', 'Cours')
@@ -63,6 +66,7 @@ def seed_academics(apps, schema_editor):
 
 
 def unseed_academics(apps, schema_editor):
+    # Permet de revenir en arrière (migrate api 0003) en effaçant toutes les données seedées.
     for model_name in ['InscriptionCours', 'InscriptionPromotion', 'CoursPlanifie', 'Promotion',
                         'CursusCours', 'Cours', 'Cursus', 'Filiere']:
         apps.get_model('api', model_name).objects.all().delete()

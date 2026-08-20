@@ -1,3 +1,4 @@
+/** Tests unitaires de la persistance de session, exécutables sans navigateur. */
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -8,6 +9,7 @@ import {
   saveStoredAuth,
 } from "./authSession.js";
 
+/** Fournit l'interface minimale de `localStorage` sur une Map isolée pour chaque test. */
 function createMemoryStorage() {
   const values = new Map();
 

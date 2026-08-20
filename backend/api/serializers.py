@@ -1,3 +1,5 @@
+"""Sérialiseurs DRF utilisés par les points d’entrée d’authentification."""
+
 from rest_framework import serializers
 
 

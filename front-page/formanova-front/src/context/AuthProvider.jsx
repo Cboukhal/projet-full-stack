@@ -1,3 +1,4 @@
+/** Fournisseur React responsable du cycle de vie complet de la session utilisateur. */
 import { useEffect, useState } from "react";
 
 import { getProfil, login as loginApi, logout as logoutApi } from "../api/authApi";
@@ -10,11 +11,16 @@ import {
 } from "../authSession";
 import { AuthContext } from "./AuthContext";
 
+/** Initialise l'état avec la session locale et signale si son token doit encore être validé. */
 function loadInitialSession() {
   const auth = loadStoredAuth();
   return { auth, isLoading: Boolean(auth) };
 }
 
+/**
+ * Rend la session, les actions de connexion et les informations de rôle disponibles aux descendants.
+ * Une session restaurée est vérifiée auprès du backend avant que les routes protégées se décident.
+ */
 export function AuthProvider({ children }) {
   const [{ auth, isLoading }, setSession] = useState(loadInitialSession);
 

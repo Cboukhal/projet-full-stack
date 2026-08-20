@@ -1,7 +1,9 @@
+/** Page d'accueil personnalisée après connexion. */
 import AppShell from "../components/AppShell";
 import { useAuth } from "../context/AuthContext";
 import "./Accueil.css";
 
+/** Retourne uniquement les raccourcis pertinents pour le rôle courant. */
 function getNavLinks(role) {
   if (role === "referente") {
     return [{ to: "/espace-referente/filieres", label: "Gérer les filières" }];
@@ -16,6 +18,7 @@ function getNavLinks(role) {
 
 export default function Accueil() {
   const { user, role } = useAuth();
+  // Le nom est privilégié, avec des valeurs de repli pour les profils incomplets.
   const displayName = user?.nom?.trim() || user?.identifiant || "Utilisateur";
 
   return (

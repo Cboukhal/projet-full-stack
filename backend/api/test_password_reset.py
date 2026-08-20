@@ -24,6 +24,7 @@ from .models import DemoUser, PasswordResetToken
     PASSWORD_RESET_TOKEN_TTL_SECONDS=3600,
 )
 class PasswordResetApiTests(TestCase):
+    # Compte et client HTTP frais pour chaque test, e-mail vidé pour n'observer que les envois du test courant.
     def setUp(self):
         self.client = Client()
         self.initial_password = 'MotDePasse-Initial-2026!'
@@ -38,6 +39,7 @@ class PasswordResetApiTests(TestCase):
         # Chaque test inspecte uniquement les e-mails qu'il déclenche lui-même.
         mail.outbox.clear()
 
+    # Déclenche la demande de réinitialisation pour l'e-mail donné (celui du compte de test par défaut).
     def _forgot(self, email=None):
         body = {'email': self.user.email if email is None else email}
         return self.client.post(
@@ -54,11 +56,13 @@ class PasswordResetApiTests(TestCase):
         )
         return parse_qs(urlparse(reset_url).query)['token'][0]
 
+    # Enchaîne la demande et l'extraction du jeton, pour les tests qui n'ont besoin que du résultat.
     def _request_raw_token(self, email=None):
         response = self._forgot(email)
         self.assertEqual(response.status_code, 200)
         return self._raw_token_from_email()
 
+    # Poste la réinitialisation avec le jeton fourni et un mot de passe (identique par défaut aux deux champs).
     def _reset(self, raw_token, password='Nouveau-MotDePasse-2026!'):
         return self.client.post(
             '/api/auth/reset-password',
@@ -70,6 +74,7 @@ class PasswordResetApiTests(TestCase):
             content_type='application/json',
         )
 
+    # Vérifie le contrat complet de la demande : hash stocké, expiration à 1h, e-mail envoyé avec le lien.
     def test_forgot_password_creates_hashed_one_hour_token_and_sends_email(self):
         before = timezone.now()
         response = self._forgot(self.user.email.upper())
@@ -93,6 +98,7 @@ class PasswordResetApiTests(TestCase):
             mail.outbox[0].body,
         )
 
+    # La réponse doit être identique pour un e-mail connu ou inconnu, pour ne pas révéler les comptes existants.
     def test_forgot_password_response_does_not_reveal_unknown_email(self):
         unknown_response = self._forgot('inconnu@example.com')
         self.assertEqual(unknown_response.status_code, 200)
@@ -103,6 +109,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(known_response.status_code, 200)
         self.assertEqual(known_response.json(), unknown_response.json())
 
+    # Aucun e-mail ne doit partir tant que la requête est incomplète, invalide ou mal formée.
     def test_forgot_password_rejects_missing_invalid_or_malformed_email(self):
         missing = self.client.post(
             '/api/auth/forgot-password',
@@ -121,6 +128,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(malformed.status_code, 400)
         self.assertEqual(len(mail.outbox), 0)
 
+    # Une panne SMTP ne doit ni changer la réponse générique ni empêcher la création du jeton en base.
     @patch('api.views.send_mail', side_effect=OSError('SMTP indisponible'))
     def test_forgot_password_keeps_generic_response_when_email_fails(self, _send_mail):
         with self.assertLogs('api.views', level='ERROR'):
@@ -130,6 +138,7 @@ class PasswordResetApiTests(TestCase):
         stored_token = PasswordResetToken.objects.get(user=self.user)
         self.assertIsNotNone(stored_token.used_at)
 
+    # Si plusieurs comptes partagent le même e-mail, impossible de savoir lequel réinitialiser : on ne crée rien.
     def test_forgot_password_does_not_choose_between_duplicate_emails(self):
         DemoUser.objects.create(
             identifiant='autre.compte',
@@ -145,6 +154,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         self.assertEqual(PasswordResetToken.objects.count(), 0)
 
+    # Une nouvelle demande invalide le lien précédent, pour qu'un seul jeton actif existe à la fois.
     def test_new_request_invalidates_previous_reset_link(self):
         first_raw_token = self._request_raw_token()
         first_record = PasswordResetToken.objects.get(
@@ -158,6 +168,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(self._reset(first_raw_token).status_code, 400)
         self.assertEqual(self._reset(second_raw_token).status_code, 200)
 
+    # Le mot de passe doit être re-haché et toute session/ancien mot de passe doit devenir invalide.
     def test_reset_password_hashes_password_and_invalidates_all_access(self):
         # Une session ouverte avant le changement doit cesser de fonctionner.
         login_response = self.client.post(
@@ -211,11 +222,13 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(old_login.status_code, 401)
         self.assertEqual(new_login.status_code, 200)
 
+    # Un jeton déjà consommé ne doit plus pouvoir servir à une seconde réinitialisation.
     def test_reset_password_token_cannot_be_reused(self):
         raw_token = self._request_raw_token()
         self.assertEqual(self._reset(raw_token).status_code, 200)
         self.assertEqual(self._reset(raw_token).status_code, 400)
 
+    # Changer d'e-mail depuis le profil doit invalider un lien de réinitialisation déjà envoyé à l'ancienne adresse.
     def test_profile_email_change_invalidates_pending_reset_link(self):
         raw_token = self._request_raw_token()
         login_response = self.client.post(
@@ -237,6 +250,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(self._reset(raw_token).status_code, 400)
         self.assertIsNotNone(PasswordResetToken.objects.get(user=self.user).used_at)
 
+    # Des mots de passe différents doivent être rejetés sans consommer le jeton (réutilisable ensuite).
     def test_reset_password_rejects_mismatched_passwords_without_using_token(self):
         raw_token = self._request_raw_token()
         response = self.client.post(
@@ -255,6 +269,7 @@ class PasswordResetApiTests(TestCase):
         self.user.refresh_from_db()
         self.assertTrue(check_password(self.initial_password, self.user.mot_de_passe))
 
+    # Les validateurs de mot de passe standards de Django (ex. trop simple) s'appliquent aussi ici.
     def test_reset_password_applies_django_password_validators(self):
         raw_token = self._request_raw_token()
         response = self._reset(raw_token, password='12345678')
@@ -263,6 +278,7 @@ class PasswordResetApiTests(TestCase):
         self.assertIn('errors', response.json())
         self.assertIsNone(PasswordResetToken.objects.get(user=self.user).used_at)
 
+    # Le validateur « similarité avec l'utilisateur » doit aussi refuser un mot de passe proche de l'identifiant.
     def test_reset_password_rejects_password_similar_to_demo_user(self):
         raw_token = self._request_raw_token()
         response = self._reset(raw_token, password=self.user.identifiant)
@@ -271,6 +287,7 @@ class PasswordResetApiTests(TestCase):
         self.assertIn('errors', response.json())
         self.assertIsNone(PasswordResetToken.objects.get(user=self.user).used_at)
 
+    # Jeton inconnu, expiré ou déjà utilisé doivent tous renvoyer la même erreur générique.
     def test_reset_password_rejects_unknown_expired_and_used_tokens(self):
         expired_raw = 'jeton-expire'
         used_raw = 'jeton-utilise'
@@ -296,6 +313,7 @@ class PasswordResetApiTests(TestCase):
         self.assertEqual(unknown_response.json(), expired_response.json())
         self.assertEqual(unknown_response.json(), used_response.json())
 
+    # Champs manquants, de mauvais type ou JSON mal formé doivent tous être rejetés en 400.
     def test_reset_password_rejects_missing_non_string_and_malformed_fields(self):
         missing = self.client.post(
             '/api/auth/reset-password',

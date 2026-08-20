@@ -1,3 +1,5 @@
+"""Middleware CORS minimal pour les appels du frontend React."""
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.cache import patch_vary_headers
@@ -6,6 +8,8 @@ from django.utils.cache import patch_vary_headers
 # La liste CORS est indépendante de CSRF. Le repli conserve la compatibilité
 # avec une ancienne configuration qui ne définirait pas encore ce réglage.
 def _allowed_origins():
+    """Normaliser les origines CORS configurées dans les réglages Django."""
+
     configured_origins = getattr(settings, 'CORS_ALLOWED_ORIGINS', None)
     if configured_origins is None:
         configured_origins = getattr(settings, 'CSRF_TRUSTED_ORIGINS', [])
@@ -18,10 +22,16 @@ def _allowed_origins():
 
 
 class SimpleCORSMiddleware:
+    """Répondre aux prérequêtes CORS et annoter les réponses autorisées."""
+
     def __init__(self, get_response):
+        """Mémoriser le prochain maillon de la chaîne de middlewares."""
+
         self.get_response = get_response
 
     def __call__(self, request):
+        """Traiter une prérequête ou enrichir la réponse Django normale."""
+
         # On lit l'origine du frontend pour autoriser seulement le domaine attendu.
         origin = request.headers.get('Origin')
         allowed_origins = _allowed_origins()
@@ -45,7 +55,8 @@ class SimpleCORSMiddleware:
         return response
 
     def _set_cors_headers(self, response, origin):
-        # En-têtes CORS minimaux pour le frontend Vite.
+        """Ajouter les en-têtes CORS minimaux pour le frontend Vite."""
+
         response['Access-Control-Allow-Origin'] = origin
         response['Access-Control-Allow-Credentials'] = 'true'
         # Ajoute Origin sans écraser un éventuel Vary déjà posé par Django.

@@ -1,3 +1,4 @@
+/** Formulaire de planification (dates, formateur, salle) des cours d'une promotion. */
 import { useEffect, useState } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -5,6 +6,8 @@ import ReferenteLayout from "../../components/ReferenteLayout";
 import FormCard from "../../components/FormCard";
 import Button from "../../components/Button";
 import { getPromotion, updatePromotionPlanning } from "../../api/promotionsApi";
+import { listFormateurs } from "../../api/inscriptionsApi";
+import { listSalles, formatSalleLabel } from "../../api/sallesApi";
 import "./PlanifierCours.css";
 
 function formatDate(value) {
@@ -20,6 +23,8 @@ export default function PlanifierCours() {
   const [planning, setPlanning] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [formateurs, setFormateurs] = useState([]);
+  const [salles, setSalles] = useState([]);
 
   useEffect(() => {
     getPromotion(token, promoId)
@@ -29,6 +34,11 @@ export default function PlanifierCours() {
       })
       .catch(() => setNotFound(true));
   }, [promoId, token]);
+
+  useEffect(() => {
+    listFormateurs(token).then(setFormateurs).catch(() => setFormateurs([]));
+    listSalles(token).then(setSalles).catch(() => setSalles([]));
+  }, [token]);
 
   if (notFound) {
     return <Navigate to="/espace-referente/promotions" replace />;
@@ -52,7 +62,13 @@ export default function PlanifierCours() {
       const updated = await updatePromotionPlanning(
         token,
         promo.id,
-        planning.map((c) => ({ id: c.id, dateDebut: c.dateDebut || null, dateFin: c.dateFin || null }))
+        planning.map((c) => ({
+          id: c.id,
+          dateDebut: c.dateDebut || null,
+          dateFin: c.dateFin || null,
+          formateurId: c.formateurId || null,
+          salle: c.salle || "",
+        }))
       );
       setPromo(updated);
       setPlanning(updated.planning);
@@ -111,6 +127,32 @@ export default function PlanifierCours() {
                       value={c.dateFin ? c.dateFin.slice(0, 16) : ""}
                       onChange={(e) => updateDate(c.id, "dateFin", e.target.value)}
                     />
+                  </div>
+                  <div className="planning-row__dates">
+                    <select
+                      className="planning-row__date-input"
+                      value={c.formateurId || ""}
+                      onChange={(e) => updateDate(c.id, "formateurId", e.target.value)}
+                    >
+                      <option value="">— Formateur à définir —</option>
+                      {formateurs.map((f) => (
+                        <option key={f.id} value={f.id}>
+                          {f.nom}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="planning-row__date-input"
+                      value={c.salle || ""}
+                      onChange={(e) => updateDate(c.id, "salle", e.target.value)}
+                    >
+                      <option value="">— Salle à définir —</option>
+                      {salles.map((s) => (
+                        <option key={s.id} value={formatSalleLabel(s)}>
+                          {formatSalleLabel(s)}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <span
                     className={

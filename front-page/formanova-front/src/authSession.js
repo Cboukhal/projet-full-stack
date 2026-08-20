@@ -1,5 +1,10 @@
+/**
+ * Persistance défensive de la session d'authentification dans le stockage du navigateur.
+ * Les fonctions acceptent un stockage injecté afin de rester testables hors du DOM.
+ */
 export const AUTH_STORAGE_KEY = "formanova_auth";
 
+/** Résout le stockage injecté ou `localStorage`, qui peut être indisponible selon l'environnement. */
 function getStorage(storage) {
   if (storage) {
     return storage;
@@ -12,6 +17,10 @@ function getStorage(storage) {
   }
 }
 
+/**
+ * Décode et valide la structure minimale d'une session sérialisée.
+ * Toute valeur corrompue ou incomplète est traitée comme une absence de session.
+ */
 export function parseStoredAuth(rawValue) {
   if (!rawValue) {
     return null;
@@ -31,6 +40,7 @@ export function parseStoredAuth(rawValue) {
   }
 }
 
+/** Relit la session persistée et supprime automatiquement une entrée devenue invalide. */
 export function loadStoredAuth(storage) {
   const target = getStorage(storage);
   if (!target) {
@@ -51,6 +61,7 @@ export function loadStoredAuth(storage) {
   }
 }
 
+/** Sérialise la session dans le stockage et indique si l'opération a réussi. */
 export function saveStoredAuth(auth, storage) {
   const target = getStorage(storage);
   if (!target) {
@@ -65,6 +76,7 @@ export function saveStoredAuth(auth, storage) {
   }
 }
 
+/** Supprime la session persistée et indique si le stockage était accessible. */
 export function clearStoredAuth(storage) {
   const target = getStorage(storage);
   if (!target) {

@@ -13,6 +13,7 @@ DEV_ORIGINS = [
 
 @override_settings(CORS_ALLOWED_ORIGINS=DEV_ORIGINS)
 class CORSMiddlewareTests(SimpleTestCase):
+    # Aucune base de données n'est nécessaire ici : SimpleTestCase suffit pour tester le middleware.
     def setUp(self):
         self.client = Client()
 
@@ -25,6 +26,7 @@ class CORSMiddlewareTests(SimpleTestCase):
             HTTP_ACCESS_CONTROL_REQUEST_HEADERS='authorization',
         )
 
+    # Chaque origine de développement autorisée doit recevoir les bons en-têtes CORS au préflight.
     def test_development_origins_are_allowed(self):
         for origin in DEV_ORIGINS:
             with self.subTest(origin=origin):
@@ -49,6 +51,7 @@ class CORSMiddlewareTests(SimpleTestCase):
             'http://localhost:5174',
         )
 
+    # Une origine hors liste ne doit recevoir aucun en-tête CORS et le préflight doit échouer.
     def test_unknown_origin_is_not_allowed(self):
         response = self._preflight('http://site-non-autorise.test')
 

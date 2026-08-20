@@ -1,3 +1,5 @@
+"""Vues d’authentification : connexion, profil, mot de passe oublié."""
+
 import hashlib
 import json
 import logging

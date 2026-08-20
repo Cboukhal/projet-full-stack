@@ -1,3 +1,4 @@
+/** Formulaire de création et de modification d'un cursus, avec gestion de son ordre pédagogique. */
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

@@ -1,3 +1,4 @@
+/** Seconde étape du parcours : validation du jeton et choix du nouveau secret. */
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
@@ -22,6 +23,7 @@ export default function ReinitialiserMotDePasse() {
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Conserve le jeton dans l'état de navigation tout en nettoyant rapidement l'URL visible.
   useEffect(() => {
     if (!searchParams.has("token")) {
       return;
@@ -41,11 +43,13 @@ export default function ReinitialiserMotDePasse() {
     );
   }, [location.pathname, location.state, navigate, searchParams, token]);
 
+  /** Synchronise les deux champs contrôlés du formulaire. */
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((previous) => ({ ...previous, [name]: value }));
   };
 
+  /** Effectue les contrôles immédiats avant de déléguer la validation complète au backend. */
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -82,6 +86,7 @@ export default function ReinitialiserMotDePasse() {
     }
   };
 
+  // Message partagé par le cas d'un lien tronqué ou ouvert sans son paramètre secret.
   const missingTokenMessage =
     "Ce lien de réinitialisation est incomplet. Demandez un nouveau lien depuis la page « Mot de passe oublié ».";
 
