@@ -1,0 +1,16 @@
+.inscriptions-page {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.inscriptions-page__main {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .inscriptions-page {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,47 @@
+.btn {
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 12px 20px;
+  width: 100%;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn--primary {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-blue-dark);
+}
+
+.btn--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--danger {
+  color: var(--color-danger);
+  background-color: transparent;
+  border: 1px solid var(--color-danger);
+}
+
+.btn--danger:hover {
+  color: var(--color-white);
+  background-color: var(--color-danger);
+}
+
+.btn--text {
+  background: none;
+  color: var(--color-blue);
+  width: auto;
+  padding: 0;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.btn--text:hover {
+  color: var(--color-blue-dark);
+}

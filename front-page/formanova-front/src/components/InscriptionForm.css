@@ -1,0 +1,109 @@
+.inscription-form {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.inscription-form__title {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__subtitle {
+  margin: 0 0 20px;
+  font-size: 0.85rem;
+  color: var(--color-text-gray);
+}
+
+.inscription-form__type {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__type label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inscription-form__suggestions {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.inscription-form__suggestions button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__suggestions button:hover {
+  background: var(--color-bg-field);
+}
+
+.inscription-form__message {
+  font-size: 0.82rem;
+  color: var(--color-danger);
+  margin: -8px 0 16px;
+}
+
+.inscription-form__field-message {
+  margin: 7px 0 0;
+  color: var(--color-text-gray);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.inscription-form__field-message[role="alert"] {
+  color: var(--color-danger);
+}
+
+.inscription-form select.field__input:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.inscription-form__note {
+  background: var(--color-icon-bg);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.inscription-form__note-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-dark);
+}
+
+.inscription-form__note-text {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-gray);
+}
+
+@media (max-width: 900px) {
+  .inscription-form {
+    width: 100%;
+  }
+}

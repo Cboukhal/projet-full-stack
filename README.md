@@ -1,196 +1,93 @@
 # Formanova
 
-Application de gestion académique pour un organisme de formation : **filières, cursus, cours, promotions, planification et inscriptions**.
-
-Le projet utilise un backend **Django (API JSON)** et un frontend **React avec Vite**.
+Application de gestion académique pour un organisme de formation : filières, cursus, cours,
+promotions, planification et inscriptions. Backend Django (API JSON) + frontend React (Vite).
 
 ## Stack
 
-* **Backend** : Django 6, PostgreSQL avec Docker ou SQLite en local, authentification par token
-* **Frontend** : React 19, Vite, React Router
-* **Conteneurisation** : Docker Compose (`db` + `backend` + `frontend`)
+- **Backend** : Django 6, PostgreSQL (Docker) ou SQLite (local), authentification par token
+- **Frontend** : React 19, Vite, React Router
+- **Conteneurisation** : Docker Compose (db + backend + frontend)
 
-## Démarrage rapide avec Docker
+## Démarrage rapide (Docker)
 
-### Prérequis
-
-Docker et Docker Compose doivent être installés.
-
-À la racine du projet, exécuter :
+Prérequis : Docker et Docker Compose.
 
 ```bash
 docker compose up --build
 ```
 
-Une fois les conteneurs démarrés :
+- Frontend : http://localhost:5173
+- Backend / API : http://localhost:8000/api/
+- Postgres : exposé au conteneur `backend` uniquement (pas de port publié sur l'hôte)
 
-* **Frontend** : `http://localhost:5173`
-* **Backend / API** : `http://localhost:8000/api/`
-* **PostgreSQL** : accessible uniquement depuis le conteneur backend. Aucun port PostgreSQL n'est publié sur la machine hôte.
+Les migrations et le seed des utilisateurs de démo sont appliqués automatiquement au démarrage
+du conteneur `backend` (`python manage.py migrate --noinput`).
 
-Les migrations ainsi que le seed des utilisateurs de démonstration sont appliqués automatiquement au démarrage du conteneur backend avec :
+La configuration (mot de passe DB, clé secrète Django, hôtes autorisés, origines CORS/CSRF) est
+lue depuis le fichier [.env](.env) à la racine.
 
-```bash
-python manage.py migrate --noinput
-```
-
-## Configuration `.env`
-
-La configuration du projet est lue depuis le fichier `.env` situé à la racine.
-
-Exemple :
-
-```env
-POSTGRES_DB=à_modifier
-POSTGRES_USER=à_modifier
-POSTGRES_PASSWORD=à_modifier
-
-DJANGO_SECRET_KEY=votre_cle_secrete_django
-DJANGO_DEBUG=1
-
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend,frontend
-DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://frontend:5173
-```
-
-> **Important :** `DJANGO_SECRET_KEY` doit contenir une clé secrète Django. Il vaut mieux éviter de copier une clé directement depuis `settings.py` si elle est versionnée dans Git. La clé doit rester dans le fichier `.env` et ne pas être publiée dans le dépôt.
-
-## Démarrage local sans Docker
+## Démarrage local (sans Docker)
 
 ### Backend
 
-Se placer dans le dossier backend :
-
 ```bash
 cd backend
-```
-
-Créer un environnement virtuel :
-
-```bash
 python -m venv .venv
-```
-
-#### Windows
-
-Activer l'environnement virtuel :
-
-```powershell
-.venv\Scripts\activate
-```
-
-#### macOS / Linux
-
-Activer l'environnement virtuel :
-
-```bash
-source .venv/bin/activate
-```
-
-Installer les dépendances :
-
-```bash
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS/Linux
 pip install -r requirements.txt
-```
-
-Appliquer les migrations :
-
-```bash
 python manage.py migrate
-```
-
-Démarrer le serveur Django :
-
-```bash
 python manage.py runserver
 ```
 
-Sans variable `POSTGRES_HOST` dans l'environnement, le backend bascule automatiquement sur **SQLite** :
+Sans `POSTGRES_HOST` dans l'environnement, le backend bascule automatiquement sur SQLite
+(`backend/db.sqlite3`), pratique pour développer sans Docker.
 
-```text
-backend/db.sqlite3
-```
-
-Cela permet de développer localement sans avoir besoin de Docker ou de PostgreSQL.
-
-## Frontend
-
-Se placer dans le dossier du frontend :
+### Frontend
 
 ```bash
 cd front-page/formanova-front
-```
-
-Installer les dépendances :
-
-```bash
 npm install
-```
-
-Démarrer le serveur de développement Vite :
-
-```bash
 npm run dev
 ```
 
-Par défaut, le frontend appelle l'API disponible à l'adresse :
-
-```text
-http://localhost:8000
-```
-
-Cette adresse peut être modifiée grâce à la variable d'environnement Vite :
-
-```env
-VITE_BACKEND_URL=http://localhost:8000
-```
+Le frontend appelle l'API sur `http://localhost:8000` par défaut (configurable via la variable
+d'environnement Vite `VITE_BACKEND_URL`).
 
 ## Comptes de démonstration
 
-Les utilisateurs de démonstration sont créés automatiquement par les migrations.
+Les utilisateurs suivants sont créés automatiquement par les migrations (`backend/api/data.py`) :
 
-Les données utilisées pour leur création sont définies dans :
-
-```text
-backend/api/data.py
-```
+| Identifiant       | Mot de passe    | Rôle             |
+|--------------------|-----------------|------------------|
+| `camille.dubois`   | `eleve123`      | Élève            |
+| `julien.marchand`  | `formateur123`  | Formateur        |
+| `marie.petit`      | `referente123`  | Référente        |
+| `sophie.lenoir`    | `admin123`      | Administrateur   |
 
 ## Structure du projet
 
-```text
-backend/                         Projet Django
-├── api/                         App principale
-│   ├── modèles
-│   ├── vues
-│   ├── authentification
-│   └── middleware
-│
-├── formanova/                   Configuration Django
-│   ├── settings
-│   ├── URLs racine
-│   ├── WSGI
-│   └── ASGI
-│
-front-page/
-└── formanova-front/             Application React avec Vite
-    └── src/
-        ├── api/                  Clients HTTP par ressource
-        │                         (cours, cursus, promotions, ...)
-        ├── pages/                Pages élève et référente
-        └── components/           Composants réutilisables
-
-docker-compose.yaml              Orchestration db + backend + frontend
+```
+backend/                 Projet Django
+  api/                    App principale (modèles, vues, auth, middleware)
+  formanova/              Settings, URLs racine, WSGI/ASGI
+front-page/formanova-front/  Application React (Vite)
+  src/api/                 Clients HTTP par ressource (cours, cursus, promotions, ...)
+  src/pages/               Pages (élève, référente)
+  src/components/          Composants réutilisables
+docker-compose.yaml       Orchestration db + backend + frontend
 ```
 
 ## Tests
 
-Pour lancer les tests du backend, se placer dans le dossier `backend` :
-
 ```bash
 cd backend
-```
-
-Puis exécuter :
-
-```bash
 python manage.py test
 ```
+
+## Notes
+
+- Projet  : l'authentification utilise un modèle `DemoUser` dédié (pas le système
+  `auth` intégré de Django) avec un jeton simple généré à la connexion.
+

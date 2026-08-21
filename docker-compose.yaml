@@ -1,5 +1,3 @@
-name: formanova
-
 services:
   db:
     image: postgres:17-alpine
@@ -19,7 +17,8 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: formanova-backend
     restart: unless-stopped
     env_file:
@@ -37,13 +36,16 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: front-page/formanova-front/Dockerfile
     container_name: formanova-frontend
     restart: unless-stopped
     environment:
-      VITE_BACKEND_URL: http://backend:8000
+      # Ce code s'exécute dans le navigateur de l'hôte, pas dans le réseau
+      # Docker : il doit donc utiliser une adresse joignable depuis l'hôte.
+      VITE_BACKEND_URL: http://localhost:8000
     volumes:
-      - ./frontend:/app
+      - ./front-page/formanova-front:/app
       - frontend_node_modules:/app/node_modules
     ports:
       - "5173:5173"

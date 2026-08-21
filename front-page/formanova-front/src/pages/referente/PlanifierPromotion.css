@@ -1,0 +1,117 @@
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wizard-step__badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--color-white);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wizard-step__badge--active {
+  background: var(--color-white);
+  color: var(--color-blue);
+}
+
+.wizard-step__label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.wizard-step__label--active {
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.wizard-step__line {
+  width: 40px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+  margin: 0 4px;
+}
+
+.wizard-card {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.wizard-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.wizard-back {
+  background: none;
+  border: none;
+  color: var(--color-text-gray);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0;
+}
+
+.wizard-back:hover {
+  color: var(--color-text-dark);
+}
+
+/* --------------------------------------------------------------------------------- Responsive --------------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .wizard-steps {
+    display: none;
+  }
+
+  .wizard-step-compact {
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    margin-bottom: 16px;
+  }
+}
+
+.wizard-step-compact {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .wizard-steps {
+    gap: 4px;
+  }
+
+  .wizard-step__label {
+    display: none;
+  }
+
+  .wizard-step__line {
+    width: 20px;
+  }
+
+  .wizard-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
